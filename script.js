@@ -13,6 +13,16 @@ var svg = d3.select("body").append("svg")
   .append("g")
     .attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
 
+function highlightNode(d) {
+    d3.select(this).select("circle")
+      .style("fill", "#ff0");
+}
+
+function unHighlightNode(d) {
+    d3.select(this).select("circle")
+      .style("fill", "#fff");
+}
+
 file = 'bodypart_full/body_part_json_trial_10/0302.json'
 d3.json(file, function(error, root) {
     if (error) throw error;
@@ -40,6 +50,11 @@ d3.json(file, function(error, root) {
         .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
         .attr("transform", function(d) { return d.x < 180 ? "translate(8)" : "rotate(180)translate(-8)"; })
         .text(function(d) { return d.name; });
+
+    // Add highlighting
+    svg.selectAll(".node")
+    .on("mouseover", highlightNode)
+    .on("mouseout", unHighlightNode);
 });
 
 //d3.select(self.frameElement).style("height", diameter - 150 + "px");
