@@ -1,0 +1,118 @@
+
+{"name": "entity",
+"children": [
+{"name": "arm"}
+,
+{"name": "back"}
+,
+{"name": "belly"}
+,
+{"name": "calf"}
+,
+{"name": "chin"}
+,
+{"name": "ear",
+"children": [
+{"name": "little finger"}
+]
+}
+,
+{"name": "elbow",
+"children": [
+{"name": "chest"}
+]
+}
+,
+{"name": "eye"}
+,
+{"name": "ankle"}
+,
+{"name": "eyebrow"}
+,
+{"name": "face"}
+,
+{"name": "finger"}
+,
+{"name": "foot"}
+,
+{"name": "forehead"}
+,
+{"name": "hair",
+"children": [
+{"name": "shin"}
+]
+}
+,
+{"name": "head",
+"children": [
+{"name": "index finger",
+"children": [
+{"name": "nose"}
+]
+}
+]
+}
+,
+{"name": "heel",
+"children": [
+{"name": "tongue"}
+]
+}
+,
+{"name": "knee"}
+,
+{"name": "leg",
+"children": [
+{"name": "tooth"}
+]
+}
+,
+{"name": "lip"}
+,
+{"name": "lower body"}
+,
+{"name": "middle finger",
+"children": [
+{"name": "hand"}
+]
+}
+,
+{"name": "mouth"}
+,
+{"name": "neck",
+"children": [
+{"name": "shoulder"}
+]
+}
+,
+{"name": "ring finger"}
+,
+{"name": "stomach"}
+,
+{"name": "thigh",
+"children": [
+{"name": "hips"}
+]
+}
+,
+{"name": "thumb",
+"children": [
+{"name": "cheek",
+"children": [
+{"name": "collar bone",
+"children": [
+{"name": "toe"}
+]
+}
+]
+}
+]
+}
+,
+{"name": "upper body"}
+,
+{"name": "waist"}
+,
+{"name": "wrist"}
+]
+}

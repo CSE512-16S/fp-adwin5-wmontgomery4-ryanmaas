@@ -1,0 +1,302 @@
+hand, tooth
+tooth, finger
+tongue, finger
+finger, belly
+foot, hips
+hair, little finger
+little finger, hair
+shoulder, foot
+ear, tooth
+stomach, elbow
+chest, tooth
+toe, hand
+elbow, eye
+eye, hair
+back, arm
+arm, nose
+nose, finger
+belly, arm
+knee, collar bone
+hips, middle finger
+middle finger, hips
+mouth, hair
+tooth, toe
+lower body, neck
+face, elbow
+shin, face
+calf, lip
+lip, arm
+thigh, collar bone
+finger, calf
+hair, shin
+waist, hair
+forehead, tooth
+head, index finger
+index finger, calf
+neck, hand
+arm, lip
+wrist, collar bone
+heel, arm
+collar bone, heel
+cheek, eye
+stomach, finger
+face, little finger
+eyebrow, toe
+ring finger, neck
+index finger, nose
+lower body, mouth
+thumb, toe
+hips, arm
+thigh, stomach
+chin, wrist
+back, heel
+nose, eye
+eye, heel
+heel, tongue
+neck, heel
+leg, wrist
+upper body, ankle
+shin, head
+elbow, stomach
+stomach, nose
+shoulder, hair
+leg, tooth
+little finger, stomach
+wrist, shoulder
+tooth, nose
+ankle, upper body
+heel, face
+tongue, waist
+cheek, collar bone
+collar bone, wrist
+eyebrow, heel
+knee, eye
+upper body, neck
+upper body, neck
+upper body, neck
+upper body, ear
+upper body, collar bone
+upper body, hips
+upper body, shoulder
+upper body, elbow
+upper body, foot
+upper body, knee
+upper body, little finger
+upper body, toe
+upper body, shin
+upper body, ear
+upper body, thigh
+upper body, collar bone
+upper body, head
+upper body, face
+upper body, heel
+upper body, calf
+upper body, chest
+upper body, cheek
+upper body, leg
+upper body, arm
+upper body, ring finger
+upper body, waist
+upper body, elbow
+waist, head
+upper body, back
+upper body, mouth
+upper body, nose
+neck, elbow
+upper body, knee
+upper body, lip
+mouth, nose
+upper body, head
+upper body, eye
+upper body, tongue
+upper body, foot
+upper body, chin
+upper body, calf
+neck, eye
+upper body, lower body
+upper body, heel
+stomach, lower body
+chest, thigh
+upper body, belly
+upper body, shin
+eye, chin
+upper body, forehead
+upper body, ankle
+foot, upper body
+heel, upper body
+upper body, eyebrow
+upper body, leg
+leg, ring finger
+lip, eye
+elbow, lower body
+neck, lower body
+nose, stomach
+upper body, finger
+upper body, thigh
+calf, upper body
+index finger, head
+cheek, tongue
+mouth, tongue
+mouth, tongue
+mouth, tooth
+tongue, tooth
+mouth, little finger
+mouth, chin
+foot, toe
+foot, toe
+foot, finger
+elbow, cheek
+middle finger, nose
+neck, collar bone
+neck, collar bone
+stomach, forehead
+back, hair
+foot, chest
+shin, chest
+forehead, chest
+lip, ankle
+thigh, lip
+eye, collar bone
+nose, waist
+back, belly
+cheek, finger
+head, tongue
+head, mouth
+thumb, mouth
+head, cheek
+head, face
+head, face
+head, thigh
+head, eye
+face, eye
+cheek, eye
+head, waist
+ear, belly
+thumb, forehead
+head, chin
+face, chin
+head, eyebrow
+head, hair
+face, hair
+cheek, hair
+head, forehead
+face, forehead
+chin, forehead
+eye, forehead
+face, mouth
+face, nose
+eye, nose
+chin, nose
+mouth, nose
+head, ear
+mouth, ear
+eye, nose
+chin, nose
+tongue, nose
+face, ear
+mouth, nose
+eyebrow, forehead
+face, lip
+mouth, lip
+face, shoulder
+eyebrow, forehead
+knee, arm
+face, stomach
+eye, nose
+chin, nose
+waist, hand
+waist, hand
+head, ear
+cheek, ear
+chin, ear
+head, ear
+eye, ear
+hair, ear
+middle finger, calf
+neck, middle finger
+index finger, elbow
+hair, hips
+chest, thumb
+elbow, belly
+mouth, nose
+ring finger, lower body
+shoulder, lower body
+nose, elbow
+knee, index finger
+hand, thumb
+hand, thumb
+hand, hips
+ring finger, thumb
+hand, waist
+ankle, thigh
+hips, hand
+middle finger, thumb
+wrist, shin
+knee, back
+leg, calf
+leg, knee
+calf, knee
+leg, knee
+calf, knee
+calf, knee
+face, hand
+hair, stomach
+arm, lower body
+upper body, waist
+little finger, nose
+finger, nose
+mouth, forehead
+wrist, elbow
+wrist, elbow
+middle finger, lower body
+thigh, finger
+collar bone, finger
+neck, index finger
+nose, middle finger
+stomach, arm
+ring finger, shin
+hand, little finger
+hand, index finger
+little finger, index finger
+hand, finger
+hand, finger
+thumb, finger
+hand, shoulder
+thumb, lower body
+hand, middle finger
+index finger, middle finger
+thumb, middle finger
+hand, middle finger
+upper body, ring finger
+face, ear
+cheek, ear
+lower body, hips
+upper body, hips
+head, ear
+upper body, stomach
+chest, stomach
+chest, stomach
+lower body, thigh
+mouth, ear
+mouth, arm
+lower body, toe
+lower body, foot
+stomach, belly
+lower body, waist
+lower body, leg
+lower body, knee
+thigh, knee
+foot, knee
+thigh, knee
+lower body, heel
+hips, heel
+knee, heel
+lower body, heel
+thigh, heel
+calf, heel
+leg, heel
+hips, heel
+lower body, heel
+thigh, heel
+knee, heel
+hips, heel

@@ -1,0 +1,108 @@
+
+{"name": "entity",
+"children": [
+{"name": "back"}
+,
+{"name": "ankle"}
+,
+{"name": "finger"}
+,
+{"name": "foot",
+"children": [
+{"name": "toe"}
+]
+}
+,
+{"name": "heel"}
+,
+{"name": "hips"}
+,
+{"name": "leg",
+"children": [
+{"name": "calf"}
+,
+{"name": "knee"}
+]
+}
+,
+{"name": "ring finger"}
+,
+{"name": "shin"}
+,
+{"name": "stomach"}
+,
+{"name": "thigh"}
+,
+{"name": "upper body",
+"children": [
+{"name": "arm"}
+,
+{"name": "belly"}
+,
+{"name": "chest"}
+,
+{"name": "collar bone"}
+,
+{"name": "elbow"}
+,
+{"name": "hand",
+"children": [
+{"name": "thumb"}
+]
+}
+,
+{"name": "head",
+"children": [
+{"name": "cheek"}
+,
+{"name": "face",
+"children": [
+{"name": "chin",
+"children": [
+{"name": "nose"}
+]
+}
+,
+{"name": "eye"}
+,
+{"name": "eyebrow"}
+,
+{"name": "forehead"}
+,
+{"name": "mouth",
+"children": [
+{"name": "ear"}
+,
+{"name": "lip"}
+,
+{"name": "tongue"}
+,
+{"name": "tooth"}
+]
+}
+]
+}
+,
+{"name": "hair"}
+]
+}
+,
+{"name": "index finger"}
+,
+{"name": "little finger"}
+,
+{"name": "lower body"}
+,
+{"name": "middle finger"}
+,
+{"name": "neck"}
+,
+{"name": "shoulder"}
+,
+{"name": "waist"}
+]
+}
+,
+{"name": "wrist"}
+]
+}
