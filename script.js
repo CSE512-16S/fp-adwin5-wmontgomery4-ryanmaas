@@ -15,7 +15,10 @@ var svg = d3.select("body").append("svg")
 
 function highlightNode(d) {
     d3.select(this).select("circle")
-      .style("fill", "#ff0");
+        .style("fill", "#ff0");
+
+    d3.select(this).selectAll(".hidden")
+    console.log(d);
 }
 
 function unHighlightNode(d) {
@@ -23,8 +26,10 @@ function unHighlightNode(d) {
       .style("fill", "#fff");
 }
 
-file = 'bodypart_full/body_part_json_trial_10/0302.json'
-d3.json(file, function(error, root) {
+tree_json = 'bodypart_full/body_part_json_trial_10/0302.json';
+//edges_txt = 'bodypart_full/edge_prob_bodypart_trial_10.txt';
+edges_txt = 'last_edges.csv';
+d3.json(tree_json, function(error, root) {
     if (error) throw error;
 
     var nodes = tree.nodes(root),
@@ -53,8 +58,16 @@ d3.json(file, function(error, root) {
 
     // Add highlighting
     svg.selectAll(".node")
-    .on("mouseover", highlightNode)
-    .on("mouseout", unHighlightNode);
+        .on("mouseover", highlightNode)
+        .on("mouseout", unHighlightNode);
+});
+
+edges = null;
+d3.csv(edges_txt, function(error, edges_data) {
+    if (error) throw error;
+
+    edges = edges_data;
+    console.log(edges);
 });
 
 //d3.select(self.frameElement).style("height", diameter - 150 + "px");
