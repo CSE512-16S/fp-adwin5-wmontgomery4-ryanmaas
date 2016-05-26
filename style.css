@@ -17,3 +17,8 @@ body {
   stroke: #ccc;
   stroke-width: 5px;
 }
+
+.link.hidden {
+  fill: non,
+  stroke: #c11;
+}
