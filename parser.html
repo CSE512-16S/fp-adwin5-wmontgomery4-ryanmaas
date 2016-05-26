@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Radial Cluster Demo</title>
+        <script type="text/javascript" src="//d3js.org/d3.v3.min.js"></script>
+        <style>
+            svg {
+                border: solid 1px #ccc;
+                font: 10px sans-serif;
+            }
+            .link {
+                fill: none;
+                stroke: #ccc;
+                stroke-width: 1.5px;
+            }
+        </style>
+    </head>
+    <body>
+           <div id="viz"></div>
+        <script type="text/javascript">
+//read txt function        
+function readTextFile(file, callback)
+{
+    var rawFile = new XMLHttpRequest();
+    rawFile.open("GET", file, false);
+    rawFile.onreadystatechange = function ()
+    {
+        if(rawFile.readyState === 4)
+        {
+            if(rawFile.status === 200 || rawFile.status == 0)
+            {
+                var allText = rawFile.responseText;
+                //alert(allText);
+                callback(allText);
+            }
+        }
+    }
+    rawFile.send(null);
+}
+//read JSON function
+function loadJSON(seq, name, callback) {   
+
+    var xobj = new XMLHttpRequest();
+        xobj.overrideMimeType("application/json");
+    if(name == "tree")
+    {    
+        var tem_seq;
+        if(seq<10)
+            tem_seq = "000"+seq+".json";
+        else if(seq<100)
+            tem_seq = "00"+seq+".json";
+        else
+            tem_seq = "0"+seq+".json";
+
+        xobj.open('GET', 'bodypart_full/body_part_json_trial_10/'+tem_seq, true); // Replace 'my_data' with the path to your file
+    }
+    else if (name == "question")
+        xobj.open('GET', 'questions_bodypart_trial_10', true); // Replace 'my_data' with the path to your file
+
+    xobj.onreadystatechange = function () {
+          if (xobj.readyState == 4 && xobj.status == "200") {
+            // Required use of an anonymous callback as .open will NOT return a value but simply returns undefined in asynchronous mode
+            callback(xobj.responseText);
+          }
+    };
+    xobj.send(null);  
+ }
+// update for each iteration
+function update(seq) {
+ loadJSON(seq, "tree",function(response) {
+  // Parse JSON string into object
+    actual_JSON = JSON.parse(response);
+    console.log(actual_JSON); 
+    console.log(seq)
+    render(actual_JSON);
+
+ });
+}
+//generate SVG
+function genSVG(){
+  var svg = d3.select("body").append("svg")
+    .attr("width", 800)
+    .attr("height", 800)
+  .append("g")
+    .attr("transform", "translate(10,10)");
+} 
+
+function render(actual_JSON){
+            var treeData = actual_JSON;
+  //delete the old svg          
+  d3.selectAll('svg').remove();
+  // Create a svg canvas
+  genSVG();
+  console.log(questionLists[seq].split(","));
+
+  vis = d3.select("#viz").append("svg:svg")
+            .attr("width", 600)
+            .attr("height", 600)
+            .append("svg:g")
+            .attr("transform", "translate(300, 300)");
+
+  var questionText = questionLists[seq].split(",")[1]+" is child of "+questionLists[seq].split(",")[0]+"  ?";
+  vis.selectAll("question")
+            .data(questionLists[seq].split(","))
+            .enter().append("text")
+            .attr("font-family", "sans-serif")
+            .attr("font-size", "20px")
+            .attr("fill", "red")
+            .text(questionText).attr("transform", function(d) { return "translate(-200,-200)"; });
+
+            // Create a cluster "canvas"
+            var cluster = d3.layout.cluster()
+            .size([300,150]);
+ 
+            var diagonal = d3.svg.diagonal.radial()
+            .projection(function(d) { return [d.y, d.x / 180 * Math.PI]; });
+             
+            var nodes = cluster.nodes(treeData);
+            var links = cluster.links(nodes);
+ 
+            var link = vis.selectAll("pathlink")
+            .data(links)
+            .enter().append("svg:path")
+            .attr("class", "link")
+            .attr("d", diagonal)
+ 
+            var node = vis.selectAll("g.node")
+            .data(nodes)
+            .enter().append("svg:g")
+            .attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
+ 
+            // Add the dot at every node
+            node.append("svg:circle")
+            .attr("r", 3.5);
+ 
+            node.append("svg:text")
+            .attr("dx", function(d) { return d.x < 180 ? 8 : -8; })
+            .attr("dy", ".31em")
+            .attr("fill", 
+                function(d){
+                    if(d.name == questionLists[seq].split(",")[0]||d.name == questionLists[seq].split(",")[1].replace(/\s+/g,"")) return "red";
+                    else    return "black";
+                })
+            .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
+            .attr("transform", function(d) { return d.x < 180 ? null : "rotate(180)"; })
+            .text(function(d) { return d.name; });
+        }    
+
+var seq = 0; // variable for the number of iteration
+
+var vis = d3.select("#viz").append("svg:svg")
+            .attr("width", 600)
+            .attr("height", 600)
+            .append("svg:g")
+            .attr("transform", "translate(300, 300)");
+var questionLists;
+//read questions_bodypart_trial_10.txt file
+readTextFile("bodypart_full/questions_bodypart_trial_10.txt",function (d){
+    var fixedResponse = d.split('\n');
+    //var jsonObj = JSON.parse(fixedResponse);
+    questionLists = fixedResponse;
+});
+questionLists.forEach(function(item,index){
+    item = item.split(',');
+})
+//exe the update
+
+setInterval(function() {
+  if(seq<302){  
+    update(seq);
+    seq++;
+  }
+}, 1000)
+
+ </script>
+    </body>
+</html>
