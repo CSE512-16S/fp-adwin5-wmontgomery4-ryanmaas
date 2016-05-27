@@ -52,8 +52,6 @@ function loadJSON(seq, name, callback) {
 
     var xobj = new XMLHttpRequest();
         xobj.overrideMimeType("application/json");
-    if(name == "tree")
-    {    
         var tem_seq;
         if(seq<10)
             tem_seq = "000"+seq+".json";
@@ -63,9 +61,6 @@ function loadJSON(seq, name, callback) {
             tem_seq = "0"+seq+".json";
 
         xobj.open('GET', 'bodypart_full/body_part_json_trial_10/'+tem_seq, true); // Replace 'my_data' with the path to your file
-    }
-    else if (name == "question")
-        xobj.open('GET', 'questions_bodypart_trial_10', true); // Replace 'my_data' with the path to your file
 
     xobj.onreadystatechange = function () {
           if (xobj.readyState == 4 && xobj.status == "200") {
