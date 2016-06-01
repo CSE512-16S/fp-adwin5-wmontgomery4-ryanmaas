@@ -2,8 +2,7 @@ var width = 960;
 var height = 800;
 
 // Constants
-WEIGHT_THRESHOLD = 5e-2; // Show hidden edges stronger than this
-LINK_WIDTH = 5; // Base stroke width for links
+DURATION = 1000;
 
 // Globals we'll manipulate
 // TODO: better way to handle this?
@@ -13,19 +12,13 @@ var nodes,
     hiddenLinks,
     weightMatrix;
 
-
-// Tree layout is only used for manipulating json trees
+// Initialize tree layout
+//var tree = d3.layout.cluster()
 var tree = d3.layout.tree()
     .size([height, width - 160]);
 
-// Actual layout comes from force layout
-//var force = d3.layout.force()
-//    .charge(-150)
-//    .linkDistance(80)
-//    .linkStrength(link => link.strength || 1.0)
-//    .size([diameter, diameter]);
-
 // Create the svg canvas into which everything goes
+// NOTE: need transform to see root node
 var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height)
@@ -95,19 +88,9 @@ var diagonal = d3.svg.diagonal()
 //        .start();
 //}
 
-//function drawGraph() {
-//    svg.selectAll(".link")
-//        .attr("x1", d => d.source.x)
-//        .attr("y1", d => d.source.y)
-//        .attr("x2", d => d.target.x)
-//        .attr("y2", d => d.target.y);
-//
-//    svg.selectAll(".node")
-//        .attr("transform", d => "translate(" + d.x + " " + d.y + ")");
-//}
-
 // File paths
 var tree_json = 'bodypart_full/body_part_json_trial_10/0302.json';
+var tree_json2 = 'bodypart_full/body_part_json_trial_10/0301.json';
 //var edges_txt = 'bodypart_full/edge_prob_bodypart_trial_10.txt';
 var weights_csv = 'last_edges.csv';
 var names_txt = 'bodypart_full/list_of_words_bodypart.txt';
@@ -122,51 +105,76 @@ function setup(error, root, weight_data, name_data) {
     if (error) throw error;
 
     // Store stuff in globals
-    nodes = tree.nodes(root),
+    nodes = tree.nodes(root);
     links = tree.links(nodes);
     weightMatrix = weight_data;
     names = name_data.split('\n');
 
-    // Set up the force layout
-//    force
-//        .nodes(nodes)
-//        .links(links)
-//        .start();
-
+    // Set up svg elements
     var link = svg.selectAll("path.link")
         .data(links)
       .enter().append("path")
         .attr("class", "link")
         .attr("d", diagonal);
-//        .attr("stroke", "#ccc")
-//        .attr("stroke-width", LINK_WIDTH);
 
     var node = svg.selectAll("g.node")
         .data(nodes)
       .enter().append("g")
         .attr("class", "node")
         .attr("transform", d => "translate(" + d.y + "," + d.x + ")")
-//        .call(force.drag);
 
     node.append("circle")
-        .attr("r", 4.5);
-        /*
-        .attr("r", d => 60 / (d.depth + 2));
-        .attr("r", function(d) {
-            return d.children ? 10*Math.sqrt(d.children.length+1) : 10;
-        });
-        */
+        .attr("r", 5);
 
     node.append("text")
-        .attr("dx", d => d.children ? -8 : 8)
         .attr("dy", 3)
+        .attr("dx", d => d.children ? -8 : 8)
         .attr("text-anchor", d => d.children ? "end" : "start")
         .text(d => d.name);
-//        .attr("dy", ".31em")
-//        .attr("text-anchor", "middle")
+}
 
-//    node.on("mouseover", highlightNode)
-//        .on("mouseout", unHighlightNode);
-//
-//    force.on("tick", drawGraph);
+svg.append("rect")
+    .attr("x", 0)
+    .attr("y", 0)
+    .attr("width", 50)
+    .attr("height", 50)
+    .on("click", toggle);
+
+var cur_json = tree_json;
+
+function toggle() {
+    if (cur_json === tree_json) {
+        cur_json = tree_json2;
+    } else {
+        cur_json = tree_json;
+    }
+
+    queue()
+        .defer(d3.json, cur_json)
+        .await(update);
+}
+
+function update(error, root) {
+    if (error) throw error;
+
+    // Store stuff in globals
+    nodes = tree.nodes(root);
+    links = tree.links(nodes);
+
+    var link = svg.selectAll("path.link")
+        .data(links)
+        .transition()
+        .duration(DURATION)
+        .attr("d", diagonal);
+
+    var node = svg.selectAll("g.node")
+        .data(nodes)
+        .transition()
+        .duration(DURATION)
+        .attr("transform", d => "translate(" + d.y + "," + d.x + ")");
+
+    node.selectAll("text")
+        .transition()
+        .duration(DURATION)
+        .text(d => d.name);
 }
