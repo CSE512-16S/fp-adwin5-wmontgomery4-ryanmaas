@@ -29,6 +29,91 @@ var svg = d3.select("body").append("svg")
 var diagonal = d3.svg.diagonal()
     .projection(d => [d.y, d.x]);
 
+// Initialize tree
+function loadJson(iter, callback) {
+    padded = ('0000' + iter).slice(-4);
+    fname = 'bodypart_full/body_part_json_trial_10/' + padded + '.json';
+    console.log(fname);
+    d3.json(fname, function(error, root) {
+        if (error) throw error;
+        callback(root);
+    });
+}
+
+var iter = 302;
+loadJson(iter, function(root) {
+    // Store stuff in globals
+    // NOTE: keep nodes sorted for transitioning properly
+    nodes = tree.nodes(root).sort((a,b) => a.name.localeCompare(b.name));
+    links = tree.links(nodes).sort((a,b) => a.target.name.localeCompare(b.target.name));
+
+    // Set up svg elements
+    var link = svg.selectAll("path.link")
+        .data(links)
+      .enter().append("path")
+        .attr("class", "link")
+        .attr("d", diagonal);
+
+    var node = svg.selectAll("g.node")
+        .data(nodes)
+      .enter().append("g")
+        .attr("class", "node")
+        .attr("transform", d => "translate(" + d.y + "," + d.x + ")")
+
+    node.append("circle")
+        .attr("r", 5);
+
+    node.append("text")
+        .attr("dy", 3)
+        .attr("dx", d => d.children ? -8 : 8)
+        .attr("text-anchor", d => d.children ? "end" : "start")
+        .text(d => d.name);
+});
+
+// This transitions between tree layouts given a new root
+function updateTree(root) {
+    // Store stuff in globals
+    // NOTE: keep nodes sorted for transitioning properly
+    nodes = tree.nodes(root).sort((a,b) => a.name.localeCompare(b.name));
+    links = tree.links(nodes).sort((a,b) => a.target.name.localeCompare(b.target.name));
+
+    // Update svg with smooth transition
+    var link = svg.selectAll("path.link")
+        .data(links)
+        .transition()
+        .duration(DURATION)
+        .attr("d", diagonal);
+
+    var node = svg.selectAll("g.node")
+        .data(nodes)
+        .transition()
+        .duration(DURATION)
+        .attr("transform", d => "translate(" + d.y + "," + d.x + ")");
+}
+
+// Set up mock prev/next buttons
+svg.append("rect")
+    .attr("x", 0)
+    .attr("y", 0)
+    .attr("width", 50)
+    .attr("height", 50)
+    .on("click", function(){
+        if (iter <= 1) return;
+        iter -= 1;
+        loadJson(iter, updateTree);
+    });
+
+svg.append("rect")
+    .attr("x", 70)
+    .attr("y", 0)
+    .attr("width", 50)
+    .attr("height", 50)
+    .on("click", function(){
+        if (iter > 301) return;
+        iter += 1;
+        loadJson(iter, updateTree);
+    });
+
 //function highlightNode(d) {
 //    // Don't highlight 'entity'
 //    if (d.index === 0) return;
@@ -88,95 +173,3 @@ var diagonal = d3.svg.diagonal()
 //        .start();
 //}
 
-// File paths
-var tree_json = 'bodypart_full/body_part_json_trial_10/0302.json';
-var tree_json2 = 'bodypart_full/body_part_json_trial_10/0301.json';
-//var edges_txt = 'bodypart_full/edge_prob_bodypart_trial_10.txt';
-var weights_csv = 'last_edges.csv';
-var names_txt = 'bodypart_full/list_of_words_bodypart.txt';
-
-queue()
-    .defer(d3.json, tree_json)
-    .defer(d3.csv, weights_csv)
-    .defer(d3.text, names_txt)
-    .await(setup);
-
-function setup(error, root, weight_data, name_data) {
-    if (error) throw error;
-
-    // Store stuff in globals
-    // NOTE: keep nodes sorted for transitioning properly
-    nodes = tree.nodes(root).sort((a,b) => a.name.localeCompare(b.name));
-    links = tree.links(nodes).sort((a,b) => a.target.name.localeCompare(b.target.name));
-    weightMatrix = weight_data;
-    names = name_data.split('\n');
-
-    // Set up svg elements
-    var link = svg.selectAll("path.link")
-        .data(links)
-      .enter().append("path")
-        .attr("class", "link")
-        .attr("d", diagonal);
-
-    var node = svg.selectAll("g.node")
-        .data(nodes)
-      .enter().append("g")
-        .attr("class", "node")
-        .attr("transform", d => "translate(" + d.y + "," + d.x + ")")
-
-    node.append("circle")
-        .attr("r", 5);
-
-    node.append("text")
-        .attr("dy", 3)
-        .attr("dx", d => d.children ? -8 : 8)
-        .attr("text-anchor", d => d.children ? "end" : "start")
-        .text(d => d.name);
-}
-
-svg.append("rect")
-    .attr("x", 0)
-    .attr("y", 0)
-    .attr("width", 50)
-    .attr("height", 50)
-    .on("click", toggle);
-
-var cur_json = tree_json;
-
-function toggle() {
-    if (cur_json === tree_json) {
-        cur_json = tree_json2;
-    } else {
-        cur_json = tree_json;
-    }
-
-    queue()
-        .defer(d3.json, cur_json)
-        .await(update);
-}
-
-function update(error, root) {
-    if (error) throw error;
-
-    // Store stuff in globals
-    nodes = tree.nodes(root).sort((a,b) => a.name.localeCompare(b.name));
-    links = tree.links(nodes).sort((a,b) => a.target.name.localeCompare(b.target.name));
-
-    // Update svg
-    var link = svg.selectAll("path.link")
-        .data(links)
-        .transition()
-        .duration(DURATION)
-        .attr("d", diagonal);
-
-    var node = svg.selectAll("g.node")
-        .data(nodes)
-        .transition()
-        .duration(DURATION)
-        .attr("transform", d => "translate(" + d.y + "," + d.x + ")");
-
-    node.selectAll("text")
-        .transition()
-        .duration(DURATION)
-        .text(d => d.name);
-}
