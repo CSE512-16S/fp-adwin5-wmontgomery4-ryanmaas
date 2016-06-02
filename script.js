@@ -107,7 +107,7 @@ function setup(error, root, weight_data, name_data) {
     // Store stuff in globals
     // NOTE: keep nodes sorted for transitioning properly
     nodes = tree.nodes(root).sort((a,b) => a.name.localeCompare(b.name));
-    links = tree.links(nodes);
+    links = tree.links(nodes).sort((a,b) => a.target.name.localeCompare(b.target.name));
     weightMatrix = weight_data;
     names = name_data.split('\n');
 
@@ -160,8 +160,9 @@ function update(error, root) {
 
     // Store stuff in globals
     nodes = tree.nodes(root).sort((a,b) => a.name.localeCompare(b.name));
-    links = tree.links(nodes);
+    links = tree.links(nodes).sort((a,b) => a.target.name.localeCompare(b.target.name));
 
+    // Update svg
     var link = svg.selectAll("path.link")
         .data(links)
         .transition()
