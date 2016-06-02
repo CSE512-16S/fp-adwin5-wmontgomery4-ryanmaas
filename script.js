@@ -1,16 +1,21 @@
 var width = 960;
 var height = 800;
 
+/***********
+ ** SETUP **
+ ***********/
+
 // Constants
-DURATION = 1000;
+var DURATION = 1000,
+    WEIGHT_THRESHOLD = 1e-1;
 
 // Globals we'll manipulate
 // TODO: better way to handle this?
 var nodes,
     links,
     names,
-    hiddenLinks,
-    weightMatrix;
+    weightMatrix,
+    iter = 302;
 
 // Initialize tree layout
 //var tree = d3.layout.cluster()
@@ -29,18 +34,50 @@ var svg = d3.select("body").append("svg")
 var diagonal = d3.svg.diagonal()
     .projection(d => [d.y, d.x]);
 
-// Initialize tree
+/********************
+ ** INITIALIZATION **
+ ********************/
+
 function loadJson(iter, callback) {
     padded = ('0000' + iter).slice(-4);
     fname = 'bodypart_full/body_part_json_trial_10/' + padded + '.json';
-    console.log(fname);
     d3.json(fname, function(error, root) {
         if (error) throw error;
         callback(root);
     });
 }
 
-var iter = 302;
+// Preload the names and weight matrix
+// TODO: do this async?
+var names_txt = 'bodypart_full/list_of_words_bodypart.txt';
+d3.text(names_txt, function(error, name_str) {
+    if (error) throw error;
+    names = name_str.split("\n");
+    names.pop(); // Drop empty last string
+});
+
+var weights_csv = 'bodypart_full/edge_prob_bodypart_trial_10.txt';
+d3.text(weights_csv, function(error, weights_str) {
+    if (error) throw error;
+
+    // Tricky stuff to format the weight matrix manually
+    // (d3.csv doesn't work for some reason)
+    weightMatrix = weights_str.split("\n");
+    weightMatrix.shift(); // Remove first row, corresponds to prior
+    weightMatrix.pop(); // Remove last row, it's just an empty string
+
+    // Reshape rows
+    weightMatrix = weightMatrix.map(function(matrix_str) {
+        var flattened = matrix_str.split(",");
+        var matrix = [];
+        for (var i = 0; i < 44; i++) {
+            matrix.push(flattened.slice(45*i, 45*(i+1)));
+        }
+        return matrix;
+    });
+});
+
+// Initialize tree
 loadJson(iter, function(root) {
     // Store stuff in globals
     // NOTE: keep nodes sorted for transitioning properly
@@ -52,13 +89,17 @@ loadJson(iter, function(root) {
         .data(links)
       .enter().append("path")
         .attr("class", "link")
-        .attr("d", diagonal);
+        .attr("d", diagonal)
+        .attr("stroke", "#ccc")
+        .attr("stroke-width", "1.5px");
 
     var node = svg.selectAll("g.node")
         .data(nodes)
       .enter().append("g")
         .attr("class", "node")
         .attr("transform", d => "translate(" + d.y + "," + d.x + ")")
+        .on("mouseover", highlightNode)
+        .on("mouseout", unHighlightNode)
 
     node.append("circle")
         .attr("r", 5);
@@ -70,7 +111,9 @@ loadJson(iter, function(root) {
         .text(d => d.name);
 });
 
-// This transitions between tree layouts given a new root
+/*****************
+ ** INTERACTION **
+ *****************/
 function updateTree(root) {
     // Store stuff in globals
     // NOTE: keep nodes sorted for transitioning properly
@@ -114,62 +157,50 @@ svg.append("rect")
         loadJson(iter, updateTree);
     });
 
-//function highlightNode(d) {
-//    // Don't highlight 'entity'
-//    if (d.index === 0) return;
-//
-//    // Highlight the node
-//    d3.select(this).select("circle")
-//        .style("fill", "#ff0");
-//
-//    // Set up the new hiddenLinks
-//    // NOTE: this requires some tricky indexing because the ordering
-//    //       of nodes in the tree differs from the alphabetical order
-//    hiddenLinks = [];
-//    var nameIndex = names.indexOf(d.name);
-//    var weights = weightMatrix[nameIndex];
-//    for (var i in weights){ // loops over the name indices
-//        if (weights.hasOwnProperty(i) && weights[i] > WEIGHT_THRESHOLD) {
-//            // Annoying indexing stuff, because 'entity' isn't in names
-//            // TODO: make this nicer by munging data files better
-//            if (i > 0) {
-//                var sourceNode = nodes.find(node => node.name === names[i-1]);
-//            } else {
-//                var sourceNode = nodes[0];
-//            }
-//
-//            hiddenLinks.push({
-//                source: sourceNode,
-//                target: nodes[d.index], // DONT use nameIndex
-//                strength: weights[i],
-//            });
-//        }
-//    }
-//
-//    // Update the svg/force
-//    svg.selectAll(".link.hidden")
-//        .data(hiddenLinks)
-////      .enter().insert("line", ":first-child")
-//      .enter().append("line")
-//        .attr("class", "link hidden")
-//        .attr("stroke", "#c11")
-//        .attr("stroke-width", d => LINK_WIDTH * d.strength);
-//
-//    force
-//        .links(links.concat(hiddenLinks))
-//        .start();
-//}
+function highlightNode(d) {
+    // Don't highlight 'entity'
+    if (d.name === 'entity') return;
 
-//function unHighlightNode(d) {
-//    // TODO: why doesn't svg.select work??
-//    d3.select(this).select("circle")
-//      .style("fill", "#fff");
-//
-//    svg.selectAll(".link.hidden")
-//        .remove();
-//    
-//    force
-//        .links(links)
-//        .start();
-//}
+    // Highlight the node
+    d3.select(this).select("circle")
+        .style("fill", "#ff0");
 
+    // Set up the new hiddenLinks
+    // NOTE: this requires some tricky indexing because the ordering
+    //       of nodes in the tree differs from the alphabetical order
+    var hiddenLinks = [];
+    var nameIndex = names.indexOf(d.name);
+    var weights = weightMatrix[iter-1][nameIndex];
+    for (var i in weights){ // loops over the name indices
+        if (weights.hasOwnProperty(i) && weights[i] > WEIGHT_THRESHOLD) {
+            if (i > 0) {
+                var source = nodes.find(d => d.name === names[i-1]);
+            } else {
+                var source = nodes.find(d => d.name === 'entity');
+            }
+            hiddenLinks.push({
+                source: source,
+                target: d,
+                strength: weights[i],
+            });
+        }
+    }
+
+    // Update the svg/force
+    svg.selectAll("path.link.hidden")
+        .data(hiddenLinks)
+//      .enter().insert("line", ":first-child")
+      .enter().append("path")
+        .attr("class", "link hidden")
+        .attr("d", diagonal)
+        .attr("stroke", "#c11")
+        .attr("stroke-width", d => 2 * d.strength);
+}
+
+function unHighlightNode(d) {
+    d3.select(this).select("circle")
+        .style("fill", "#fff");
+
+    svg.selectAll("path.link.hidden")
+        .remove();
+}
