@@ -1,20 +1,340 @@
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <title>Never Ending Object Learning (NEOL)</title>
-    <!-- Custom CSS styles -->
-    <link href="style.css" rel="stylesheet" type="text/css">
-  </head>
+<head>
+    <meta charset="utf-8">
+    <title>Interactive Learning for Hierarchy of Concepts</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
 
-  <body>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/mustache.js/0.7.2/mustache.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.5.1/moment.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.4.2/d3.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
 
-  <!-- JS libraries -->
-  <script src="//d3js.org/d3.v3.min.js"></script>
-  <script src="//d3js.org/queue.v1.min.js"></script>
-  <script src="//d3js.org/topojson.v1.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="//d3js.org/d3.v3.min.js"></script>
+    <!-- Link Swiper's CSS -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/Swiper/3.0.1/css/swiper.min.css">
 
-  <!-- Custom JS code -->
-  <script src="script.js"></script>
+    <!-- Demo styles -->
+    <style>
+    body {
+        background: #eee;
+        font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+        font-size: 14px;
+        color:#000;
+        margin: 0;
+        padding: 0;
+    }
+    .swiper-container {
+        width: 100%;
+        height: 400px;
+        margin: 20px auto;
+    }
+    .swiper-slide {
+        text-align: center;
+        font-size: 18px;
+        background: #fff;
+        width: 500px;
+        /* Center slide text vertically */
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: -webkit-flex;
+        display: flex;
+        -webkit-box-pack: center;
+        -ms-flex-pack: center;
+        -webkit-justify-content: center;
+        justify-content: center;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        -webkit-align-items: center;
+        align-items: center;
+    }
+            svg {
+                border: solid 1px #ccc;
+                font: 10px sans-serif;
+            }
+            .link {
+                fill: none;
+                stroke: #ccc;
+                stroke-width: 1.5px;
+            }
+            .prev {
+              float: left;
+            }
+            .post {
+              float: right;
+              position: relative;
+            }
+.svg-container {
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%; /* aspect ratio */
+    vertical-align: top;
+    overflow: hidden;
+}
+.svg-content-responsive {
+    display: inline-block;
+    position: absolute;
+    top: 10px;
+    left: 0;
+}
+.arrange-vertically > * {
+    display: block;
+}
+.row {
+  width: 100%;
+}
 
-  </body>
+.block {
+  width: 600px; padding: 20px;
+  position:relative;
+  display: inline-block; // display inline with abality to provide width/height
+}​
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="jumbotron">
+                <h1>Interactive Learning for Hierarchy of Concepts</h1>
+                <p>A quick and dirty D3 with Socket-IO demo. The NodeJS server emits a new data event periodically. The D3 incorporates and displays the new data. It also throws away old data (first-in-first-out).
+                </p>
+                <p>For reference,
+                </p>
+                <ul>
+                    <li>
+                        <a href="http://socket.io/">http://socket.io/</a>
+                    </li>
+                    <li>
+                        <a href="http://d3js.org/">http://d3js.org/</a>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+        <div class="row log">
+            <div class="well col-md-12">
+                <h2 id="questionTitle">Server Emissions</h2>
+                <div class='chart bar-chart'></div>
+                <button id="answerYES" type="submit" class="btn btn-default">Yes</button>
+                <button id="answerNO" type="submit" class="btn btn-default">No</button>
+                <button id="next_question"type="submit" class="btn btn-default">Next</button>
+            </div>
+        </div>
+    </div>
+<div class="arrange-vertically">
+    <div class="row" id="viz">
+           <div class="block" id="chart1"></div>
+           <div class="block" id="chart2"></div>
+    </div>
+    <!-- Swiper -->
+    <div class="swiper-container">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide" id="s0">Slide 1</div>
+            <div class="swiper-slide" id="s1">Slide 2</div>
+            <div class="swiper-slide" id="s2">Slide 3</div>
+            <div class="swiper-slide" id="s3">Slide 4</div>
+            <div class="swiper-slide" id="s4">Slide 5</div>
+            <div class="swiper-slide" id="s5">Slide 6</div>
+            <div class="swiper-slide" id="s6">Slide 7</div>
+            <div class="swiper-slide" id="s7">Slide 8</div>
+            <div class="swiper-slide" id="s8">Slide 9</div>
+            <div class="swiper-slide" id="s9">Slide 10</div>
+        </div>
+        <!-- Add Scrollbar -->
+        <div class="swiper-scrollbar"></div>
+    </div>
+</div>
+
+
+    <!-- Swiper JS -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/Swiper/3.0.1/js/swiper.min.js"></script>
+
+    <!-- Initialize Swiper -->
+    <script>
+    var swiper = new Swiper('.swiper-container', {
+        scrollbar: '.swiper-scrollbar',
+        scrollbarHide: true,
+        slidesPerView: 'auto',
+        centeredSlides: true,
+        spaceBetween: 30,
+        grabCursor: true
+    });
+    </script>
+      <!-- Initialize socket communication with server -->
+    <script src="/socket.io/socket.io.js" type="text/javascript"></script>
+     <!-- Handle socket communication -->
+    <script type="text/javascript">
+    //
+    // This script block handles all the Socket-IO communication
+    var handleServerRequest = function(data) {
+        console.log({
+            source: 'server',
+            action: 'request',
+            data: data
+        });
+
+        data.date = new Date(data.date);
+        if(seq==0)
+            updateINIT(data);
+        else
+            updateANS(data);
+    };
+
+    var socket = io.connect('http://localhost'); //, {port:81}
+    socket.on('server request', handleServerRequest);
+    // socket.on('update_after_answer', function(data){
+    //     console.log('update_after_answer'+data.value);
+    // });
+    //tell the server to generate new tree, question and matrix based on the yes/no
+    function answerButtonClicked() {
+        socket.emit(
+            "answer_button_clicked",1);// [Yes,no] = [1,0]
+        //set answer hidden //set next visible
+        document.getElementById("answerYES").style.visibility="hidden";
+        document.getElementById("answerNO").style.visibility="hidden";
+        document.getElementById("next_question").style.visibility="visible";
+    }
+    function nextQuestionButtonClicked() {
+        //change the layout from right to left//***
+        //socket.emit(
+        //    "next_question",1);
+
+        //set next hidden //set answer visible
+        document.getElementById("answerYES").style.visibility="visible";
+        document.getElementById("answerNO").style.visibility="visible";
+        document.getElementById("next_question").style.visibility="hidden";
+        updateNEXT();
+
+    } 
+    document.getElementById("answerYES").addEventListener("click", answerButtonClicked);
+    document.getElementById("answerNO").addEventListener("click", answerButtonClicked); //right now call the same function***
+    document.getElementById("next_question").addEventListener("click", nextQuestionButtonClicked);
+
+    </script>
+
+    <!-- Visualization -->
+    <script type="text/javascript">
+    var data = [];
+    var seq = 0; // variable for the number of iteration
+    var questionLists;
+    var questionTEM;
+
+    function createSVG(stage, callback){
+                vis = d3.select(stage).append("svg:svg")
+                    .attr("width", 600)
+                    .attr("height", 600)
+                    .append("svg:g")
+                    .attr("transform", "translate(240, 310)"); 
+                callback(vis);        
+    }
+    function render(vis,actual_JSON, stage){
+                var treeData = actual_JSON.value.tree;
+                var question = actual_JSON.value.question;
+                var seqKeyword;
+                
+                // Create a cluster "canvas"
+                var cluster = d3.layout.cluster()
+                .size([300,150]);
+     
+                var diagonal = d3.svg.diagonal.radial()
+                .projection(function(d) { return [d.y, d.x / 180 * Math.PI]; });
+                 
+                var nodes = cluster.nodes(treeData);
+                var links = cluster.links(nodes);
+     
+                var link = vis.selectAll("pathlink")
+                .data(links)
+                .enter().append("svg:path")
+                .attr("class", "link")
+                .attr("d", diagonal)
+     
+                var node = vis.selectAll("g.node")
+                    .data(nodes)
+                    .enter().append("svg:g")
+                    .attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
+     
+                // Add the dot at every node
+                node.append("svg:circle")
+                    .attr("r", 3.5);
+     
+                node.append("svg:text")
+                    .attr("dx", function(d) { return d.x < 180 ? 8 : -8; })
+                    .attr("dy", ".31em")
+                    .attr("fill", 
+                        function(d){
+                            if(stage == "#chart2")
+                                seqKeyword = seq-1;
+                            else
+                                seqKeyword = seq;
+                            if(d.name == question[0]||d.name == question[1].replace(/\s+/g,"")) return "red";
+                            else    return "black";
+                        })
+                    .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
+                    .attr("transform", function(d) { return d.x < 180 ? null : "rotate(180)"; })
+                    .text(function(d) { return d.name; });
+                
+            }    
+    function updateINIT(data){
+            //set next invisible initially
+            document.getElementById("next_question").style.visibility="hidden";
+
+            createSVG("#chart1",function(vis){   
+                render(vis, data, "#chart1");  
+            });
+            //plot to the slide
+            createSVG("#s"+seq,function(vis){
+                render(vis, data, "#s0");  
+            });    
+            //set question title
+            $("#questionTitle").text("  Q:"+data.value.question[0]+" is parent of "+data.value.question[1].replace(/\s+/g,"")+" ?");
+            seq++;
+    }        
+    function updateANS(data){
+        createSVG("#chart2",function(vis){
+            //do the transition animation [from the current state to next state]
+            render(vis, data, "#chart2");  
+        });
+        //plot this to slides
+        if(seq<10)
+        {
+            createSVG("#s"+seq,function(vis){
+                render(vis, data, "#s0");  
+            });    
+        }
+        //update the question temporal variable 
+        questionTEM = data.value.question;     
+        if(seq<301) seq++;
+    }
+
+    function updateNEXT(){
+        //set question title
+        $("#questionTitle").text("  Q:"+questionTEM[0]+" is parent of "+questionTEM[1].replace(/\s+/g,"")+" ?");
+
+        //delete #1
+        d3.select('#chart1').select("svg").remove();
+        //move the #chart2 to left
+        $("#chart2").fadeIn('slow',function(){
+            $(this).animate({'left': '-=600px'},300,function(){
+                    //#1 copy #2
+                    document.getElementById("chart1").appendChild(
+                        document.getElementById("chart2").querySelector("svg")
+                    );
+                    //move the #chart2back to right
+                    $("#chart2").animate({
+                        'left' : "0px" //moves right
+                    });
+            });
+        });
+        
+    }
+      
+
+    </script>
+
+</body>
 </html>
