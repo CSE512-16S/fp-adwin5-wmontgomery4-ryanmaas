@@ -89,7 +89,7 @@
 }
 
 .block {
-  width: 600px; padding: 20px;
+  width: 560px; padding: 10px;
   position:relative;
   display: inline-block; // display inline with abality to provide width/height
 }​
@@ -101,21 +101,18 @@
         <div class="row">
             <div class="jumbotron">
                 <h1>Interactive Learning for Hierarchy of Concepts</h1>
-                <p>A quick and dirty D3 with Socket-IO demo. The NodeJS server emits a new data event periodically. The D3 incorporates and displays the new data. It also throws away old data (first-in-first-out).
+                <p>Answering the question, our system forms the hierarchy of concepts steps by steps. In every iteration, the system will throw the most informative question based on current hierarchy. 
+                <!-- </p>
+                <p> <mark>Let's build the tree! </mark>
+                </p> -->
+                <p><a class="btn btn-primary btn-lg" role="button" id="startBTN">Let's build the tree »</a>
                 </p>
-                <p>For reference,
-                </p>
-                <ul>
-                    <li>
-                        <a href="http://socket.io/">http://socket.io/</a>
-                    </li>
-                    <li>
-                        <a href="http://d3js.org/">http://d3js.org/</a>
-                    </li>
-                </ul>
             </div>
 
         </div>
+    </div>
+<div class="container">    
+<div class="arrange-vertically">
         <div class="row log">
             <div class="well col-md-12">
                 <h2 id="questionTitle">Server Emissions</h2>
@@ -125,8 +122,6 @@
                 <button id="next_question"type="submit" class="btn btn-default">Next</button>
             </div>
         </div>
-    </div>
-<div class="arrange-vertically">
     <div class="row" id="viz">
            <div class="block" id="chart1"></div>
            <div class="block" id="chart2"></div>
@@ -149,6 +144,7 @@
         <div class="swiper-scrollbar"></div>
     </div>
 </div>
+</div>    
 
 
     <!-- Swiper JS -->
@@ -226,10 +222,10 @@
 
     function createSVG(stage, callback){
                 vis = d3.select(stage).append("svg:svg")
-                    .attr("width", 600)
-                    .attr("height", 600)
+                    .attr("width", 560)
+                    .attr("height", 560)
                     .append("svg:g")
-                    .attr("transform", "translate(240, 310)"); 
+                    .attr("transform", "translate(280, 280)"); 
                 callback(vis);        
     }
     function render(vis,actual_JSON, stage){
@@ -291,7 +287,7 @@
                 render(vis, data, "#s0");  
             });    
             //set question title
-            $("#questionTitle").text("  Q:"+data.value.question[0]+" is parent of "+data.value.question[1].replace(/\s+/g,"")+" ?");
+            $("#questionTitle").text("  Q: "+data.value.question[0]+" is the parent of "+data.value.question[1].replace(/\s+/g,"")+" ?");
             seq++;
     }        
     function updateANS(data){
@@ -313,7 +309,7 @@
 
     function updateNEXT(){
         //set question title
-        $("#questionTitle").text("  Q:"+questionTEM[0]+" is parent of "+questionTEM[1].replace(/\s+/g,"")+" ?");
+        $("#questionTitle").text("  Q: "+questionTEM[0]+" is the parent of "+questionTEM[1].replace(/\s+/g,"")+" ?");
 
         //delete #1
         d3.select('#chart1').select("svg").remove();
@@ -332,8 +328,14 @@
         });
         
     }
-      
-
+    </script>
+    <!-- set start button -->
+    <script type="text/javascript">
+        $("#startBTN").click(function() {
+            $('html,body').animate({
+                scrollTop: $(".row.log").offset().top},
+                'slow');
+        });
     </script>
 
 </body>
