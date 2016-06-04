@@ -112,40 +112,76 @@
         </div>
     </div>
 <div class="container">    
-<div class="arrange-vertically">
-        <div class="row log">
-            <div class="well col-md-12">
-                <h2 id="questionTitle">Server Emissions</h2>
-                <div class='chart bar-chart'></div>
-                <button id="answerYES" type="submit" class="btn btn-default">Yes</button>
-                <button id="answerNO" type="submit" class="btn btn-default">No</button>
-                <button id="next_question"type="submit" class="btn btn-default">Next</button>
-                <button type="button" class="btn btn-danger pull-right btn-sm">Video</button>
-                <button id="galleryBTN"type="submit" class="btn btn-info pull-right btn-sm">Gallery</button>
+    <div class="arrange-vertically">
+        <div class="container">    
+            <div class="row log" id="vizSection">
+                <div class="well col-md-12">
+                    <h2 id="questionTitle">Server Emissions</h2>
+                    <button id="answerYES" type="submit" class="btn btn-default btn-md">Yes</button>
+                    <button id="answerNO" type="submit" class="btn btn-default btn-md">No</button>
+                    <button id="next_question"type="submit" class="btn btn-default btn-md">Next</button>
+                    <button id="animationBTN"type="button" class="btn btn-danger pull-right btn-md">Animation</button>
+                    <button id="galleryBTN"type="submit" class="btn btn-info pull-right btn-md">Gallery</button>
+                </div>
             </div>
-        </div>
-    <div class="row" id="viz">
-           <div class="block" id="chart1"></div>
-           <div class="block" id="chart2"></div>
+            <div class="row" id="viz">
+                   <div class="block" id="chart1"></div>
+                   <div class="block" id="chart2"></div>
+            </div>
+        </div>      
+        <!-- Swiper -->
+        <div class="container"> 
+            <!-- <title>    -->
+            <div class="row log" id="gallerySection">
+                <div class="well col-md-12">
+                    <h2 id="galleryTITLE">Gallery Slides</h2>
+                    <button id="galleryBTNBack"type="submit" class="btn btn-info pull-right btn-lg">Back</button>
+                </div>
+            </div>
+            <div class="swiper-container">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide" id="s0">Slide 1</div>
+                    <div class="swiper-slide" id="s1">Slide 2</div>
+                    <div class="swiper-slide" id="s2">Slide 3</div>
+                    <div class="swiper-slide" id="s3">Slide 4</div>
+                    <div class="swiper-slide" id="s4">Slide 5</div>
+                    <div class="swiper-slide" id="s5">Slide 6</div>
+                    <div class="swiper-slide" id="s6">Slide 7</div>
+                    <div class="swiper-slide" id="s7">Slide 8</div>
+                    <div class="swiper-slide" id="s8">Slide 9</div>
+                    <div class="swiper-slide" id="s9">Slide 10</div>
+                </div>
+                <!-- Add Scrollbar -->
+                <div class="swiper-scrollbar"></div>
+            </div>
+        </div>       
+        <!-- <animation> -->
+        <div class="container"> 
+            <!-- <title>    -->
+            <div class="row log" id="animationSection">
+                <div class="well col-md-12">
+                    <h2 id="galleryTITLE">Video animation</h2>
+                    <button id="animationBTNBack"type="submit" class="btn btn-info pull-right btn-lg">Back</button>
+                </div>
+            </div>
+            <div class="swiper-container">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide" id="s0">Slide 1</div>
+                    <div class="swiper-slide" id="s1">Slide 2</div>
+                    <div class="swiper-slide" id="s2">Slide 3</div>
+                    <div class="swiper-slide" id="s3">Slide 4</div>
+                    <div class="swiper-slide" id="s4">Slide 5</div>
+                    <div class="swiper-slide" id="s5">Slide 6</div>
+                    <div class="swiper-slide" id="s6">Slide 7</div>
+                    <div class="swiper-slide" id="s7">Slide 8</div>
+                    <div class="swiper-slide" id="s8">Slide 9</div>
+                    <div class="swiper-slide" id="s9">Slide 10</div>
+                </div>
+                 Add Scrollbar
+                <div class="swiper-scrollbar"></div>
+            </div>
+        </div>      
     </div>
-    <!-- Swiper -->
-    <div class="swiper-container">
-        <div class="swiper-wrapper">
-            <div class="swiper-slide" id="s0">Slide 1</div>
-            <div class="swiper-slide" id="s1">Slide 2</div>
-            <div class="swiper-slide" id="s2">Slide 3</div>
-            <div class="swiper-slide" id="s3">Slide 4</div>
-            <div class="swiper-slide" id="s4">Slide 5</div>
-            <div class="swiper-slide" id="s5">Slide 6</div>
-            <div class="swiper-slide" id="s6">Slide 7</div>
-            <div class="swiper-slide" id="s7">Slide 8</div>
-            <div class="swiper-slide" id="s8">Slide 9</div>
-            <div class="swiper-slide" id="s9">Slide 10</div>
-        </div>
-        <!-- Add Scrollbar -->
-        <div class="swiper-scrollbar"></div>
-    </div>
-</div>
 </div>    
 
 
@@ -336,22 +372,42 @@
         //start scroll down button
         $("#startBTN").click(function() {
             $('html,body').animate({
-                scrollTop: $(".row.log").offset().top},
+                scrollTop: $("#vizSection").offset().top},
                 'slow');
         });
         //
         var flip =1;
-        $("#galleryBTN").click(function() {
-            flip=!flip
-            if(flip==0)
-            {
-                document.getElementById('viz').style.display="none";
-                $(this).text("back");
-            }else{
-                document.getElementById('viz').style.display="block";
-                $(this).text("gallery");
+        // $("#galleryBTN").click(function() {
+        //     flip=!flip
+        //     if(flip==0)
+        //     {
+        //         document.getElementById('viz').style.display="none";
+        //         $(this).text("back");
+        //     }else{
+        //         document.getElementById('viz').style.display="block";
+        //         $(this).text("gallery");
 
-            }    
+        //     }    
+        //});
+        $("#galleryBTN").click(function() {
+            $('html,body').animate({
+                scrollTop: $("#gallerySection").offset().top},
+                'slow');
+        });
+        $("#animationBTN").click(function() {
+            $('html,body').animate({
+                scrollTop: $("#animationSection").offset().top},
+                'slow');
+        });
+        $('#galleryBTNBack').click(function() {
+            $('html,body').animate({
+                scrollTop: $("#vizSection").offset().top},
+                'slow');
+        });
+        $('#animationBTNBack').click(function() {
+            $('html,body').animate({
+                scrollTop: $("#vizSection").offset().top},
+                'slow');
         });
         
     </script>
