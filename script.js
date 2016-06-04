@@ -1,4 +1,4 @@
-var width = 960;
+var width = 600;
 var height = 800;
 
 /***********
@@ -34,6 +34,14 @@ var svg = d3.select("body").append("svg")
 var diagonal = d3.svg.diagonal()
     .projection(d => [d.y, d.x]);
 
+// Sorting function to keep everything sane
+// NOTE: this is annoying because of the weightMatrix ordering
+function sortNames(a,b) {
+    if (a === 'entity') return -1;
+    if (b === 'entity') return 1;
+    return a.localeCompare(b);
+}
+
 /********************
  ** INITIALIZATION **
  ********************/
@@ -43,6 +51,11 @@ function loadJson(iter, callback) {
     fname = 'bodypart_full/body_part_json_trial_10/' + padded + '.json';
     d3.json(fname, function(error, root) {
         if (error) throw error;
+
+        // Store stuff in globals
+        // NOTE: keep nodes sorted for transitioning properly
+        nodes = tree.nodes(root).sort((a,b) => sortNames(a.name, b.name));
+        links = tree.links(nodes).sort((a,b) => sortNames(a.target.name, b.target.name));
         callback(root);
     });
 }
@@ -79,11 +92,6 @@ d3.text(weights_csv, function(error, weights_str) {
 
 // Initialize tree
 loadJson(iter, function(root) {
-    // Store stuff in globals
-    // NOTE: keep nodes sorted for transitioning properly
-    nodes = tree.nodes(root).sort((a,b) => a.name.localeCompare(b.name));
-    links = tree.links(nodes).sort((a,b) => a.target.name.localeCompare(b.target.name));
-
     // Set up svg elements
     var link = svg.selectAll("path.link")
         .data(links)
@@ -115,11 +123,6 @@ loadJson(iter, function(root) {
  ** INTERACTION **
  *****************/
 function updateTree(root) {
-    // Store stuff in globals
-    // NOTE: keep nodes sorted for transitioning properly
-    nodes = tree.nodes(root).sort((a,b) => a.name.localeCompare(b.name));
-    links = tree.links(nodes).sort((a,b) => a.target.name.localeCompare(b.target.name));
-
     // Update svg with smooth transition
     var link = svg.selectAll("path.link")
         .data(links)
@@ -157,6 +160,17 @@ svg.append("rect")
         loadJson(iter, updateTree);
     });
 
+// Set up mock switch layout button
+svg.append("rect")
+    .attr("x", 140)
+    .attr("y", 0)
+    .attr("fill", "#c04")
+    .attr("width", 50)
+    .attr("height", 50)
+    .on("click", function(){
+        console.log("foo");
+    });
+
 function highlightNode(d) {
     // Don't highlight 'entity'
     if (d.name === 'entity') return;
@@ -173,13 +187,8 @@ function highlightNode(d) {
     var weights = weightMatrix[iter-1][nameIndex];
     for (var i in weights){ // loops over the name indices
         if (weights.hasOwnProperty(i) && weights[i] > WEIGHT_THRESHOLD) {
-            if (i > 0) {
-                var source = nodes.find(d => d.name === names[i-1]);
-            } else {
-                var source = nodes.find(d => d.name === 'entity');
-            }
             hiddenLinks.push({
-                source: source,
+                source: nodes[i],
                 target: d,
                 strength: weights[i],
             });
