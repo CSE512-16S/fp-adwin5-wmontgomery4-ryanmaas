@@ -87,6 +87,9 @@
   position:relative;
   display: inline-block; // display inline with abality to provide width/height
 }​
+.bold {
+    font-weight : bold;
+}​
     </style>
 </head>
 <body>
@@ -111,10 +114,17 @@
                     <button id="answerYES" type="submit" class="btn btn-default btn-md">Yes</button>
                     <button id="answerNO" type="submit" class="btn btn-default btn-md">No</button>
                     <button id="next_question"type="submit" class="btn btn-default btn-md">Next</button>
-                    <button id="animationBTN"type="button" class="btn btn-danger pull-right btn-md">Animation</button>
+                    <button id="restartBTN" type="submit" class="btn btn-default btn-md">Restart</button>
+                    <button id="animationBTN"type="button" class="btn btn-success pull-right btn-md">Animation</button>
                     <button id="galleryBTN"type="submit" class="btn btn-info pull-right btn-md">Gallery</button>
+                    <p><div class="progress">
+                    <div id="slidesProgress" class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:0%">
+                    1%
+                    </div>
+                </div></p>
                 </div>
             </div>
+            
             <div class="row" id="viz">
                    <div class="block" id="chart1"></div>
                    <div class="block" id="chart2"></div>
@@ -231,16 +241,26 @@
         updateNEXT();
 
     } 
+    function restartButtonClicked() {
+        seq=0;
+        document.getElementById("answerYES").style.visibility="visible";
+        document.getElementById("answerNO").style.visibility="visible";
+        document.getElementById("restartBTN").style.visibility="hidden";
+        socket.emit("restart",1);//send notification to server
+    } 
     document.getElementById("answerYES").addEventListener("click", answerButtonClicked);
     document.getElementById("answerNO").addEventListener("click", answerButtonClicked); //right now call the same function***
     document.getElementById("next_question").addEventListener("click", nextQuestionButtonClicked);
+    document.getElementById("restartBTN").addEventListener("click", restartButtonClicked);
+    document.getElementById("restartBTN").style.visibility="hidden";
 
     </script>
 
     <!-- Visualization -->
     <script type="text/javascript">
     var data = [];
-    var seq = 0; // variable for the number of iteration
+    var seq = 0; // variable indicates current iteration
+    var seqTotal =10; //set the max number of seq
     var questionLists;
     var questionTEM;
 
@@ -286,7 +306,7 @@
                     .attr("dx", function(d) { return d.x < 180 ? 8 : -8; })
                     .attr("dy", ".31em")
                     .attr("fill", 
-                        function(d){
+                        function(d){//highlight the chosen node
                             if(stage == "#chart2")
                                 seqKeyword = seq-1;
                             else
@@ -311,7 +331,8 @@
                 render(vis, data, "#s0");  
             });    
             //set question title
-            $("#questionTitle").text("  Q: "+data.value.question[0]+" is the parent of "+data.value.question[1].replace(/\s+/g,"")+" ?");
+            $("#questionTitle").html("Q : "+'<mark>' + data.value.question[1].replace(/\s+/g,"") + '</mark>' + " is the children of " + '<mark>' + data.value.question[0] + '</mark>' +" ?");
+
             seq++;
     }        
     function updateANS(data){
@@ -333,7 +354,9 @@
 
     function updateNEXT(){
         //set question title
-        $("#questionTitle").text("  Q: "+questionTEM[0]+" is the parent of "+questionTEM[1].replace(/\s+/g,"")+" ?");
+        //$("#questionTitle").text("  Q: "+questionTEM[1].replace(/\s+/g,"")+" is the children of "+questionTEM[0]+" ?");
+        //$("#questionTitle").html();​
+        $("#questionTitle").html("Q : "+'<mark>' + questionTEM[1].replace(/\s+/g,"") + '</mark>' + " is the children of " + '<mark>' + questionTEM[0] + '</mark>' +" ?");
 
         //delete #1
         d3.select('#chart1').select("svg").remove();
@@ -350,10 +373,27 @@
                     });
             });
         });
-        
+        //set progress bar
+        //document.getElementById("slidesProgress").
+        var temSeq = seq-1;
+        if(temSeq<seqTotal)
+        {
+            document.getElementById("slidesProgress").style.width= 100*temSeq/seqTotal+"%";
+            $("#slidesProgress").html(100*temSeq/seqTotal+"%");  
+        }    
+        else if(temSeq=seqTotal)
+        {
+            document.getElementById("slidesProgress").style.width= 100+"%";
+            $("#slidesProgress").html(100*temSeq/seqTotal+"%");  
+            $("#slidesProgress").attr("class", "progress-bar progress-bar-danger progress-bar-striped");
+            document.getElementById("restartBTN").style.visibility="visible";
+            document.getElementById("answerYES").style.visibility="hidden";
+            document.getElementById("answerNO").style.visibility="hidden";
+            document.getElementById("next_question").style.visibility="hidden";
+        }    
     }
     </script>
-    <!-- set start button -->
+    <!-- set buttons -->
     <script type="text/javascript">
         //start scroll down button
         $("#startBTN").click(function() {
