@@ -200,7 +200,6 @@
     <script src="/socket.io/socket.io.js" type="text/javascript"></script>
      <!-- Handle socket communication -->
     <script type="text/javascript">
-    //
     // This script block handles all the Socket-IO communication
     var handleServerRequest = function(data) {
         console.log({
@@ -208,6 +207,7 @@
             action: 'request',
             data: data
         });
+        dataHistory.push(data.value);//store data in here
         if(seq==0)
             updateINIT(data);
         else
@@ -251,8 +251,10 @@
         d3.select('#chart1').select("svg").remove();
         d3.select('#chart2').select("svg").remove();
         socket.emit("restart",1);//send notification to server
+        //clear dataHistory
+        dataHistory = [];
         //clear the gallery
-        for(var i=0;i<10;i++)
+        for(var i=0;i<11;i++)
         {
             d3.select('#s'+i).selectAll("svg").remove();
         }    
@@ -267,7 +269,7 @@
 
     <!-- Visualization -->
     <script type="text/javascript">
-    var data = [];
+    var dataHistory = []; 
     var seq = 0; // variable indicates current iteration
     var seqTotal = 10; //set the max number of seq
     var questionLists;
@@ -358,7 +360,6 @@
         }
         //update the question temporal variable 
         questionTEM = data.value.question;    
-        
         if(seq<301) seq++;
     }
 
