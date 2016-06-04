@@ -89,6 +89,11 @@ io.sockets.on('connection', function(socket) {
         generateServerRequest(seq); 
         if(seq<301)seq++;
     });
+    socket.on("restart", function(data){
+        generateServerRequest(0); 
+        seq=0;
+    });
+    //init
     generateServerRequest(0); 
     seq++;
     // setInterval(function(){
