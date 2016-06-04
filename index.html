@@ -139,16 +139,17 @@
             </div>
             <div class="swiper-container">
                 <div class="swiper-wrapper">
-                    <div class="swiper-slide" id="s0">Slide 1</div>
-                    <div class="swiper-slide" id="s1">Slide 2</div>
-                    <div class="swiper-slide" id="s2">Slide 3</div>
-                    <div class="swiper-slide" id="s3">Slide 4</div>
-                    <div class="swiper-slide" id="s4">Slide 5</div>
-                    <div class="swiper-slide" id="s5">Slide 6</div>
-                    <div class="swiper-slide" id="s6">Slide 7</div>
-                    <div class="swiper-slide" id="s7">Slide 8</div>
-                    <div class="swiper-slide" id="s8">Slide 9</div>
-                    <div class="swiper-slide" id="s9">Slide 10</div>
+                    <div class="swiper-slide" id="s0">Slide 0</div>
+                    <div class="swiper-slide" id="s1">Slide 1</div>
+                    <div class="swiper-slide" id="s2">Slide 2</div>
+                    <div class="swiper-slide" id="s3">Slide 3</div>
+                    <div class="swiper-slide" id="s4">Slide 4</div>
+                    <div class="swiper-slide" id="s5">Slide 5</div>
+                    <div class="swiper-slide" id="s6">Slide 6</div>
+                    <div class="swiper-slide" id="s7">Slide 7</div>
+                    <div class="swiper-slide" id="s8">Slide 8</div>
+                    <div class="swiper-slide" id="s9">Slide 9</div>
+                    <div class="swiper-slide" id="s10">Slide 10</div>
                 </div>
                 <!-- Add Scrollbar -->
                 <div class="swiper-scrollbar"></div>
@@ -207,8 +208,6 @@
             action: 'request',
             data: data
         });
-
-        data.date = new Date(data.date);
         if(seq==0)
             updateINIT(data);
         else
@@ -246,7 +245,17 @@
         document.getElementById("answerYES").style.visibility="visible";
         document.getElementById("answerNO").style.visibility="visible";
         document.getElementById("restartBTN").style.visibility="hidden";
+        $("#slidesProgress").attr("class", "progress-bar progress-bar-striped active");
+        document.getElementById("slidesProgress").style.width= 0+"%";
+        $("#slidesProgress").html(0+"%");  
+        d3.select('#chart1').select("svg").remove();
+        d3.select('#chart2').select("svg").remove();
         socket.emit("restart",1);//send notification to server
+        //clear the gallery
+        for(var i=0;i<10;i++)
+        {
+            d3.select('#s'+i).selectAll("svg").remove();
+        }    
     } 
     document.getElementById("answerYES").addEventListener("click", answerButtonClicked);
     document.getElementById("answerNO").addEventListener("click", answerButtonClicked); //right now call the same function***
@@ -260,7 +269,7 @@
     <script type="text/javascript">
     var data = [];
     var seq = 0; // variable indicates current iteration
-    var seqTotal =10; //set the max number of seq
+    var seqTotal = 10; //set the max number of seq
     var questionLists;
     var questionTEM;
 
@@ -331,7 +340,7 @@
                 render(vis, data, "#s0");  
             });    
             //set question title
-            $("#questionTitle").html("Q : "+'<mark>' + data.value.question[1].replace(/\s+/g,"") + '</mark>' + " is the children of " + '<mark>' + data.value.question[0] + '</mark>' +" ?");
+            $("#questionTitle").html("Q1 : "+'<mark>' + data.value.question[1].replace(/\s+/g,"") + '</mark>' + " is the children of " + '<mark>' + data.value.question[0] + '</mark>' +" ?");
 
             seq++;
     }        
@@ -341,14 +350,15 @@
             render(vis, data, "#chart2");  
         });
         //plot this to slides
-        if(seq<10)
+        if(seq<11)
         {
             createSVG("#s"+seq,function(vis){
                 render(vis, data, "#s0");  
             });    
         }
         //update the question temporal variable 
-        questionTEM = data.value.question;     
+        questionTEM = data.value.question;    
+        
         if(seq<301) seq++;
     }
 
@@ -356,23 +366,26 @@
         //set question title
         //$("#questionTitle").text("  Q: "+questionTEM[1].replace(/\s+/g,"")+" is the children of "+questionTEM[0]+" ?");
         //$("#questionTitle").html();​
-        $("#questionTitle").html("Q : "+'<mark>' + questionTEM[1].replace(/\s+/g,"") + '</mark>' + " is the children of " + '<mark>' + questionTEM[0] + '</mark>' +" ?");
+        $("#questionTitle").html("Q"+seq+" : "+'<mark>' + questionTEM[1].replace(/\s+/g,"") + '</mark>' + " is the children of " + '<mark>' + questionTEM[0] + '</mark>' +" ?");
 
         //delete #1
         d3.select('#chart1').select("svg").remove();
-        //move the #chart2 to left
-        $("#chart2").fadeIn('slow',function(){
-            $(this).animate({'left': '-=600px'},300,function(){
-                    //#1 copy #2
-                    document.getElementById("chart1").appendChild(
-                        document.getElementById("chart2").querySelector("svg")
-                    );
-                    //move the #chart2back to right
-                    $("#chart2").animate({
-                        'left' : "0px" //moves right
-                    });
+        if(seq<seqTotal+1)//no movement in the end iteration
+        {
+            //move the #chart2 to left
+            $("#chart2").fadeIn('slow',function(){
+                $(this).animate({'left': '-=600px'},300,function(){
+                        //#1 copy #2
+                        document.getElementById("chart1").appendChild(
+                            document.getElementById("chart2").querySelector("svg")
+                        );
+                        //move the #chart2back to right
+                        $("#chart2").animate({
+                            'left' : "0px" //moves right
+                        });
+                });
             });
-        });
+        }
         //set progress bar
         //document.getElementById("slidesProgress").
         var temSeq = seq-1;
@@ -381,7 +394,7 @@
             document.getElementById("slidesProgress").style.width= 100*temSeq/seqTotal+"%";
             $("#slidesProgress").html(100*temSeq/seqTotal+"%");  
         }    
-        else if(temSeq=seqTotal)
+        else if(temSeq==seqTotal)
         {
             document.getElementById("slidesProgress").style.width= 100+"%";
             $("#slidesProgress").html(100*temSeq/seqTotal+"%");  
@@ -390,7 +403,7 @@
             document.getElementById("answerYES").style.visibility="hidden";
             document.getElementById("answerNO").style.visibility="hidden";
             document.getElementById("next_question").style.visibility="hidden";
-        }    
+        }   
     }
     </script>
     <!-- set buttons -->
