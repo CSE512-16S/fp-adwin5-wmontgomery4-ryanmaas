@@ -4,11 +4,13 @@ body {
 
 .node rect {
   fill: #fff;
-  stroke: steelblue;
+  stroke: #000;
+  stroke-width: 2px;
 }
 
-.node {
-  font: 11px sans-serif;
+.node text {
+  font: 12px sans-serif;
+  text-transform: capitalize;
 }
 
 .link {

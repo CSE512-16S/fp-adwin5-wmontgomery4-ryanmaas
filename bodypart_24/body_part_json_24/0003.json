@@ -1,0 +1,70 @@
+
+{"name": "body_part",
+"children": [
+{"name": "chin"}
+,
+{"name": "ear"}
+,
+{"name": "hair",
+"children": [
+{"name": "eye"}
+]
+}
+,
+{"name": "hand",
+"children": [
+{"name": "forehead"}
+,
+{"name": "upper body",
+"children": [
+{"name": "tongue",
+"children": [
+{"name": "elbow",
+"children": [
+{"name": "chest"}
+]
+}
+,
+{"name": "finger"}
+]
+}
+]
+}
+]
+}
+,
+{"name": "head",
+"children": [
+{"name": "eyebrow"}
+]
+}
+,
+{"name": "middle finger"}
+,
+{"name": "mouth",
+"children": [
+{"name": "neck"}
+]
+}
+,
+{"name": "nose"}
+,
+{"name": "ring finger"}
+,
+{"name": "shoulder"}
+,
+{"name": "tooth",
+"children": [
+{"name": "arm"}
+,
+{"name": "cheek",
+"children": [
+{"name": "face"}
+]
+}
+,
+{"name": "collar bone"}
+]
+}
+]
+}

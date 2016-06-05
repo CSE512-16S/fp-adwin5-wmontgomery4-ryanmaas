@@ -1,0 +1,10 @@
+ankle
+arm
+calf
+face
+head
+hips
+leg
+lower body
+shin
+upper body

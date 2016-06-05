@@ -1,5 +1,5 @@
-var width = 1000;
-var height = 800;
+var width = 800;
+var height = 600;
 
 /***********
  ** SETUP **
@@ -7,16 +7,17 @@ var height = 800;
 
 // Constants
 var DURATION = 1000,
-    WEIGHT_THRESHOLD = 1e-1,
-    STROKE_WIDTH = 3.0;
+    WEIGHT_THRESHOLD = 5e-2,
+    STROKE_WIDTH = 3.0,
+    NUM_BODYPART = 10;
 
 // Globals we'll manipulate
 // TODO: better way to handle this?
 var nodes,
     links,
-    names,
+    nameIndex,
     weightMatrix,
-    iter = 302;
+    iter = 0;
 
 // Initialize tree layout
 //var tree = d3.layout.cluster()
@@ -35,12 +36,15 @@ var svg = d3.select("body").append("svg")
 var diagonal = d3.svg.diagonal()
     .projection(d => [d.y, d.x]);
 
+// Interpolate color based on weight strength
+var color = d3.interpolateRgb("#f00", "#000");
+
 // Sorting function to keep everything sane
 // NOTE: this is annoying because of the weightMatrix ordering
 function sortNames(a,b) {
-    if (a === 'entity') return -1;
-    if (b === 'entity') return 1;
-    return a.localeCompare(b);
+    if (a === 'body_part') return -1;
+    if (b === 'body_part') return 1;
+    return nameIndex[a] - nameIndex[b];
 }
 
 /********************
@@ -49,7 +53,7 @@ function sortNames(a,b) {
 
 function loadJson(iter, callback) {
     padded = ('0000' + iter).slice(-4);
-    fname = 'bodypart_full/body_part_json_trial_10/' + padded + '.json';
+    fname = 'bodypart_10/body_part_json_10/' + padded + '.json';
     d3.json(fname, function(error, root) {
         if (error) throw error;
 
@@ -57,20 +61,29 @@ function loadJson(iter, callback) {
         // NOTE: keep nodes sorted for transitioning properly
         nodes = tree.nodes(root).sort((a,b) => sortNames(a.name, b.name));
         links = tree.links(nodes).sort((a,b) => sortNames(a.target.name, b.target.name));
+        links.forEach(function(link) {
+            var targetIndex = nameIndex[link.target.name];
+                sourceIndex = (link.source.name === 'body_part') ? 0 : 
+                                    nameIndex[link.source.name] + 1;
+            link.strength = weightMatrix[iter][targetIndex][sourceIndex];
+        });
         callback(root);
     });
 }
 
 // Preload the names and weight matrix
 // TODO: do this async?
-var names_txt = 'bodypart_full/list_of_words_bodypart.txt';
+var names_txt = 'bodypart_10/list_of_words_bodypart_10.txt';
 d3.text(names_txt, function(error, name_str) {
     if (error) throw error;
-    names = name_str.split("\n");
+    var names = name_str.split("\n");
     names.pop(); // Drop empty last string
+
+    nameIndex = {};
+    names.forEach( (name, i) => nameIndex[name] = i );
 });
 
-var weights_csv = 'bodypart_full/edge_prob_bodypart_trial_10.txt';
+var weights_csv = 'bodypart_10/edge_prob_bodypart_10.txt';
 d3.text(weights_csv, function(error, weights_str) {
     if (error) throw error;
 
@@ -84,44 +97,49 @@ d3.text(weights_csv, function(error, weights_str) {
     weightMatrix = weightMatrix.map(function(matrix_str) {
         var flattened = matrix_str.split(",");
         var matrix = [];
-        for (var i = 0; i < 44; i++) {
-            matrix.push(flattened.slice(45*i, 45*(i+1)));
+        for (var i = 0; i < NUM_BODYPART; i++) {
+            var withEntity = NUM_BODYPART + 1;
+            matrix.push(flattened.slice(withEntity*i, withEntity*(i+1)));
         }
         return matrix;
     });
+    
+    // Initialize tree with nested callback
+
+    // NOTE: hack since we don't use async above
+    // Have to do this after loading weights
+    loadJson(iter, function(root) {
+        // Set up svg elements
+        var link = svg.selectAll("path.link")
+            .data(links)
+          .enter().append("path")
+            .attr("class", "link")
+            .attr("d", diagonal)
+            .attr("stroke", l => color(l.strength))
+            .attr("stroke-width", l => l.strength * STROKE_WIDTH);
+
+        var node = svg.selectAll("g.node")
+            .data(nodes)
+          .enter().append("g")
+            .attr("class", "node")
+            .attr("transform", d => "translate(" + d.y + "," + d.x + ")")
+            .on("mouseover", highlightNode)
+            .on("mouseout", unHighlightNode)
+
+        node.append("rect")
+            .attr("width", 85)
+            .attr("height", 20)
+            .attr("x", -25)
+            .attr("y", -10);
+
+        node.append("text")
+            .attr("dy", 4)
+            .attr("dx", -20)
+            .attr("text-anchor", "start")
+            .text(d => d.name);
+    });
 });
 
-// Initialize tree
-loadJson(iter, function(root) {
-    // Set up svg elements
-    var link = svg.selectAll("path.link")
-        .data(links)
-      .enter().append("path")
-        .attr("class", "link")
-        .attr("d", diagonal)
-        .attr("stroke", "#ccc")
-        .attr("stroke-width", STROKE_WIDTH);
-
-    var node = svg.selectAll("g.node")
-        .data(nodes)
-      .enter().append("g")
-        .attr("class", "node")
-        .attr("transform", d => "translate(" + d.y + "," + d.x + ")")
-        .on("mouseover", highlightNode)
-        .on("mouseout", unHighlightNode)
-
-    node.append("rect")
-        .attr("width", 72)
-        .attr("height", 20)
-        .attr("x", -25)
-        .attr("y", -10)
-
-    node.append("text")
-        .attr("dy", 4)
-        .attr("dx", -20)
-        .attr("text-anchor", "start")
-        .text(d => d.name);
-});
 
 /*****************
  ** INTERACTION **
@@ -132,7 +150,9 @@ function updateTree(root) {
         .data(links)
         .transition()
         .duration(DURATION)
-        .attr("d", diagonal);
+        .attr("d", diagonal)
+        .style("stroke", l => color(l.strength))
+        .style("stroke-width", l => l.strength * STROKE_WIDTH);
 
     var node = svg.selectAll("g.node")
         .data(nodes)
@@ -165,18 +185,19 @@ svg.append("rect")
     });
 
 function highlightNode(d) {
-    // Don't highlight 'entity'
-    if (d.name === 'entity') return;
+    // Don't highlight 'body_part'
+    if (d.name === 'body_part') return;
 
     // Set up the new hiddenLinks
     // NOTE: this requires some tricky indexing because the ordering
     //       of nodes in the tree differs from the alphabetical order
     var hiddenLinks = [],
-        parents = [],
-        nameIndex = names.indexOf(d.name),
-        weights = weightMatrix[iter-1][nameIndex];
+        index = nameIndex[d.name],
+        weights = weightMatrix[iter+1][index];
     for (var i in weights){ // loops over the name indices
-        if (weights.hasOwnProperty(i) && weights[i] > WEIGHT_THRESHOLD) {
+        if (weights.hasOwnProperty(i) && // Not sure if this is necessary here
+                    nodes[i] !== d.parent &&
+                    weights[i] > WEIGHT_THRESHOLD) {
             hiddenLinks.push({
                 source: nodes[i],
                 target: d,
@@ -185,32 +206,31 @@ function highlightNode(d) {
         }
     }
 
+    // TODO: make more efficient
     svg.selectAll("g.node rect")
         .style("fill", function(node) {
-            if (node.name === d.name) return "#ff0";
-            if (hiddenLinks.find(link => link.source.name === node.name)) return "#00b";
+            if (node.name === d.name) return "#ff9";
+            if (hiddenLinks.find(link => link.source.name === node.name) ||
+                node.name === d.parent.name) return "#99f";
             else return "#fff";
         });
-
-    svg.selectAll("path.link")
-        .style("stroke-width", l => STROKE_WIDTH*(l.target.name !== d.name))
 
     svg.selectAll("path.link.hidden")
         .data(hiddenLinks)
       .enter().insert("path", ":first-child") // make sure it's under everything else
         .attr("class", "link hidden")
         .attr("d", diagonal)
-        .attr("stroke", "#c11")
-        .attr("stroke-width", d => d.strength * STROKE_WIDTH);
+        .attr("stroke", l => color(l.strength))
+        .attr("stroke-width", l => l.strength * STROKE_WIDTH);
 }
 
 function unHighlightNode(d) {
-    svg.selectAll("g.node rect")
-        .style("fill", "#fff");
-
-    svg.selectAll("path.link")
-        .style("stroke-width", STROKE_WIDTH);
-
     svg.selectAll("path.link.hidden")
         .remove();
+
+    svg.selectAll("path.link")
+        .style("stroke-width", l => l.strength * STROKE_WIDTH);
+
+    svg.selectAll("g.node rect")
+        .style("fill", "#fff");
 }

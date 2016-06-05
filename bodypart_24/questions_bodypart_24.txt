@@ -1,0 +1,132 @@
+chest, forehead
+forehead, chest
+eyebrow, chest
+tooth, cheek
+head, shoulder
+cheek, tooth
+ear, shoulder
+hair, forehead
+shoulder, hand
+nose, head
+arm, hair
+face, chin
+face, chin
+face, chest
+face, forehead
+face, mouth
+face, finger
+face, neck
+face, forehead
+face, collar bone
+face, hand
+face, chin
+face, cheek
+face, elbow
+face, shoulder
+face, arm
+face, forehead
+face, ring finger
+finger, face
+hand, shoulder
+chest, face
+neck, face
+face, nose
+face, cheek
+face, eye
+face, middle finger
+face, mouth
+face, hair
+collar bone, face
+elbow, face
+chin, forehead
+face, eye
+face, finger
+shoulder, face
+face, eyebrow
+face, shoulder
+face, ear
+face, nose
+forehead, nose
+ear, face
+ring finger, ear
+arm, ear
+hair, chin
+upper body, chest
+upper body, chest
+upper body, face
+upper body, elbow
+upper body, shoulder
+upper body, collar bone
+upper body, ear
+upper body, arm
+elbow, shoulder
+face, tongue
+face, hand
+upper body, neck
+face, collar bone
+chest, middle finger
+head, ear
+head, face
+head, eyebrow
+head, hair
+head, elbow
+head, hand
+head, chest
+upper body, ring finger
+arm, ring finger
+arm, hand
+eyebrow, hair
+eyebrow, hair
+chin, eyebrow
+chin, eyebrow
+head, tooth
+mouth, tooth
+mouth, tongue
+upper body, middle finger
+forehead, eyebrow
+finger, arm
+finger, arm
+arm, finger
+hand, finger
+hand, middle finger
+finger, middle finger
+ring finger, hand
+ring finger, middle finger
+ring finger, finger
+forehead, cheek
+hair, hand
+finger, forehead
+finger, eye
+nose, forehead
+upper body, eyebrow
+finger, ring finger
+elbow, eye
+collar bone, head
+collar bone, cheek
+cheek, hand
+mouth, chin
+face, head
+nose, chest
+tongue, head
+middle finger, ring finger
+neck, chin
+eyebrow, head
+ring finger, upper body
+face, upper body
+collar bone, upper body
+tongue, face
+finger, upper body
+arm, middle finger
+arm, elbow
+arm, elbow
+chest, shoulder
+chest, shoulder
+shoulder, neck
+hand, ring finger
+finger, elbow
+ring finger, middle finger
+arm, middle finger
+hand, elbow
+arm, finger
+ring finger, hand
+arm, shoulder
