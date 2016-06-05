@@ -2,14 +2,13 @@ body {
     margin: 25px;
 }
 
-.node circle {
+.node rect {
   fill: #fff;
   stroke: steelblue;
-  stroke-width: 1.5px;
 }
 
 .node {
-  font: 10px sans-serif;
+  font: 11px sans-serif;
 }
 
 .link {

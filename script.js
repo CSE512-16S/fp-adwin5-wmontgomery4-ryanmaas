@@ -1,4 +1,4 @@
-var width = 600;
+var width = 1000;
 var height = 800;
 
 /***********
@@ -7,7 +7,8 @@ var height = 800;
 
 // Constants
 var DURATION = 1000,
-    WEIGHT_THRESHOLD = 1e-1;
+    WEIGHT_THRESHOLD = 1e-1,
+    STROKE_WIDTH = 3.0;
 
 // Globals we'll manipulate
 // TODO: better way to handle this?
@@ -99,7 +100,7 @@ loadJson(iter, function(root) {
         .attr("class", "link")
         .attr("d", diagonal)
         .attr("stroke", "#ccc")
-        .attr("stroke-width", "1.5px");
+        .attr("stroke-width", STROKE_WIDTH);
 
     var node = svg.selectAll("g.node")
         .data(nodes)
@@ -109,13 +110,16 @@ loadJson(iter, function(root) {
         .on("mouseover", highlightNode)
         .on("mouseout", unHighlightNode)
 
-    node.append("circle")
-        .attr("r", 5);
+    node.append("rect")
+        .attr("width", 72)
+        .attr("height", 20)
+        .attr("x", -25)
+        .attr("y", -10)
 
     node.append("text")
-        .attr("dy", 3)
-        .attr("dx", d => d.children ? -8 : 8)
-        .attr("text-anchor", d => d.children ? "end" : "start")
+        .attr("dy", 4)
+        .attr("dx", -20)
+        .attr("text-anchor", "start")
         .text(d => d.name);
 });
 
@@ -160,31 +164,17 @@ svg.append("rect")
         loadJson(iter, updateTree);
     });
 
-// Set up mock switch layout button
-svg.append("rect")
-    .attr("x", 140)
-    .attr("y", 0)
-    .attr("fill", "#c04")
-    .attr("width", 50)
-    .attr("height", 50)
-    .on("click", function(){
-        console.log("foo");
-    });
-
 function highlightNode(d) {
     // Don't highlight 'entity'
     if (d.name === 'entity') return;
 
-    // Highlight the node
-    d3.select(this).select("circle")
-        .style("fill", "#ff0");
-
     // Set up the new hiddenLinks
     // NOTE: this requires some tricky indexing because the ordering
     //       of nodes in the tree differs from the alphabetical order
-    var hiddenLinks = [];
-    var nameIndex = names.indexOf(d.name);
-    var weights = weightMatrix[iter-1][nameIndex];
+    var hiddenLinks = [],
+        parents = [],
+        nameIndex = names.indexOf(d.name),
+        weights = weightMatrix[iter-1][nameIndex];
     for (var i in weights){ // loops over the name indices
         if (weights.hasOwnProperty(i) && weights[i] > WEIGHT_THRESHOLD) {
             hiddenLinks.push({
@@ -195,20 +185,31 @@ function highlightNode(d) {
         }
     }
 
-    // Update the svg/force
+    svg.selectAll("g.node rect")
+        .style("fill", function(node) {
+            if (node.name === d.name) return "#ff0";
+            if (hiddenLinks.find(link => link.source.name === node.name)) return "#00b";
+            else return "#fff";
+        });
+
+    svg.selectAll("path.link")
+        .style("stroke-width", l => STROKE_WIDTH*(l.target.name !== d.name))
+
     svg.selectAll("path.link.hidden")
         .data(hiddenLinks)
-//      .enter().insert("line", ":first-child")
-      .enter().append("path")
+      .enter().insert("path", ":first-child") // make sure it's under everything else
         .attr("class", "link hidden")
         .attr("d", diagonal)
         .attr("stroke", "#c11")
-        .attr("stroke-width", d => 2 * d.strength);
+        .attr("stroke-width", d => d.strength * STROKE_WIDTH);
 }
 
 function unHighlightNode(d) {
-    d3.select(this).select("circle")
+    svg.selectAll("g.node rect")
         .style("fill", "#fff");
+
+    svg.selectAll("path.link")
+        .style("stroke-width", STROKE_WIDTH);
 
     svg.selectAll("path.link.hidden")
         .remove();
