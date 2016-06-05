@@ -7,9 +7,9 @@ var height = 600;
 
 // Constants
 var DURATION = 1000,
-    WEIGHT_THRESHOLD = 5e-2,
     STROKE_WIDTH = 3.0,
-    NUM_BODYPART = 10;
+    NUM_BODYPART = 24,
+    WEIGHT_THRESHOLD = 1 / NUM_BODYPART;
 
 // Globals we'll manipulate
 // TODO: better way to handle this?
@@ -53,7 +53,7 @@ function sortNames(a,b) {
 
 function loadJson(iter, callback) {
     padded = ('0000' + iter).slice(-4);
-    fname = 'bodypart_10/body_part_json_10/' + padded + '.json';
+    fname = 'bodypart_24/body_part_json_24/' + padded + '.json';
     d3.json(fname, function(error, root) {
         if (error) throw error;
 
@@ -73,7 +73,7 @@ function loadJson(iter, callback) {
 
 // Preload the names and weight matrix
 // TODO: do this async?
-var names_txt = 'bodypart_10/list_of_words_bodypart_10.txt';
+var names_txt = 'bodypart_24/list_of_words_bodypart_24.txt';
 d3.text(names_txt, function(error, name_str) {
     if (error) throw error;
     var names = name_str.split("\n");
@@ -83,7 +83,7 @@ d3.text(names_txt, function(error, name_str) {
     names.forEach( (name, i) => nameIndex[name] = i );
 });
 
-var weights_csv = 'bodypart_10/edge_prob_bodypart_10.txt';
+var weights_csv = 'bodypart_24/edge_prob_bodypart_24.txt';
 d3.text(weights_csv, function(error, weights_str) {
     if (error) throw error;
 
