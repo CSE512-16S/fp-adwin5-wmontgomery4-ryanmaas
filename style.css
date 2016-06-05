@@ -1,0 +1,18 @@
+body {
+    margin: 25px;
+}
+
+.node rect {
+  fill: #fff;
+  stroke: #000;
+  stroke-width: 2px;
+}
+
+.node text {
+  font: 12px sans-serif;
+  text-transform: capitalize;
+}
+
+.link {
+  fill: none;
+}
