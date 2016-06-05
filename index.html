@@ -29,7 +29,7 @@
     }
     .swiper-container {
         width: 100%;
-        height: 400px;
+        height: 500px;
         margin: 20px auto;
     }
     .swiper-slide {
@@ -150,6 +150,28 @@
                     <div class="swiper-slide" id="s8">Slide 8</div>
                     <div class="swiper-slide" id="s9">Slide 9</div>
                     <div class="swiper-slide" id="s10">Slide 10</div>
+                    <div class="swiper-slide" id="s11">Slide 11</div>
+                    <div class="swiper-slide" id="s12">Slide 12</div>
+                    <div class="swiper-slide" id="s13">Slide 13</div>
+                    <div class="swiper-slide" id="s14">Slide 14</div>
+                    <div class="swiper-slide" id="s15">Slide 15</div>
+                    <div class="swiper-slide" id="s16">Slide 16</div>
+                    <div class="swiper-slide" id="s17">Slide 17</div>
+                    <div class="swiper-slide" id="s18">Slide 18</div>
+                    <div class="swiper-slide" id="s19">Slide 19</div>
+                    <div class="swiper-slide" id="s20">Slide 20</div>
+                    <div class="swiper-slide" id="s21">Slide 21</div>
+                    <div class="swiper-slide" id="s22">Slide 22</div>
+                    <div class="swiper-slide" id="s23">Slide 23</div>
+                    <div class="swiper-slide" id="s24">Slide 24</div>
+                    <div class="swiper-slide" id="s25">Slide 25</div>
+                    <div class="swiper-slide" id="s26">Slide 26</div>
+                    <div class="swiper-slide" id="s27">Slide 27</div>
+                    <div class="swiper-slide" id="s28">Slide 28</div>
+                    <div class="swiper-slide" id="s29">Slide 29</div>
+                    <div class="swiper-slide" id="s30">Slide 30</div>
+                    <div class="swiper-slide" id="s31">Slide 31</div>
+                    <div class="swiper-slide" id="s32">Slide 32</div>
                 </div>
                 <!-- Add Scrollbar -->
                 <div class="swiper-scrollbar"></div>
@@ -254,10 +276,14 @@
         //clear dataHistory
         dataHistory = [];
         //clear the gallery
-        for(var i=0;i<11;i++)
+        for(var i=0;i<33;i++)
         {
             d3.select('#s'+i).selectAll("svg").remove();
-        }    
+        }
+        for(var i=1;i<33;i++)
+        {
+            d3.select('#s'+i).html("slides"+i);
+        }        
     } 
     document.getElementById("answerYES").addEventListener("click", answerButtonClicked);
     document.getElementById("answerNO").addEventListener("click", answerButtonClicked); //right now call the same function***
@@ -271,15 +297,15 @@
     <script type="text/javascript">
     var dataHistory = []; //array to restore json tree and question
     var seq = 0; // variable indicates current iteration
-    var seqTotal = 10; //set the max number of seq
+    var seqTotal = 32; //set the max number of seq
     var questionTEM;
 
-    function createSVG(stage, callback){
+    function createSVG(stage, widthSVG, transSVG, callback){
                 vis = d3.select(stage).append("svg:svg")
-                    .attr("width", 560)
-                    .attr("height", 560)
+                    .attr("width", widthSVG)
+                    .attr("height", widthSVG)
                     .append("svg:g")
-                    .attr("transform", "translate(280, 280)"); 
+                    .attr("transform", "translate("+transSVG+", "+transSVG+")"); 
                 callback(vis);        
     }
     function render(vis,actual_JSON, stage){
@@ -333,39 +359,46 @@
             //set next invisible initially
             document.getElementById("next_question").style.visibility="hidden";
 
-            createSVG("#chart1",function(vis){   
+            createSVG("#chart1", 560, 280, function(vis){   
                 render(vis, data, "#chart1");  
             });
             //plot to the slide
-            createSVG("#s"+seq,function(vis){
+            $('#s0').empty()
+            createSVG("#s"+seq, 500, 250, function(vis){
                 render(vis, data, "#s0");  
             });    
             //set question title
             $("#questionTitle").html("Q1 : "+'<mark>' + data.value.question[1].replace(/\s+/g,"") + '</mark>' + " is the children of " + '<mark>' + data.value.question[0] + '</mark>' +" ?");
-
             seq++;
-    }        
+    }
+    //called when user click Yes/No, and the system would send the posterior tree as the input of this function "data"        
     function updateANS(data){
-        createSVG("#chart2",function(vis){
-            //do the transition animation [from the current state to next state]
-            render(vis, data, "#chart2");  
+        createSVG("#chart2", 560, 280, function(vis){
+            //do the transition animation [from the current state to next state]*************************
+
+
+
+            //
+            render(vis, data, "#chart2");//right now just plot the posterior json tree// the last state tree can be acquired by dataHistory  
         });
         //plot this to slides
-        if(seq<11)
+        if(seq<33)
         {
-            createSVG("#s"+seq,function(vis){
+            $("#s"+seq).empty()
+            createSVG("#s"+seq, 500, 250, function(vis){
                 render(vis, data, "#s0");  
             });    
+            //plot question on slides
+            d3.select("#s"+seq).select("svg").append("text").text("Q"+seq+" : "+data.value.question[1].replace(/\s+/g,"") +" <- "+data.value.question[0]+" ?").attr("x",250).attr("y",20).attr("font-size",25)
+                .attr("font-family","serif")
+                .attr("text-anchor","middle");    
         }
         //update the question temporal variable 
         questionTEM = data.value.question;    
         if(seq<301) seq++;
     }
-
+    //called when user click next
     function updateNEXT(){
-        //set question title
-        //$("#questionTitle").text("  Q: "+questionTEM[1].replace(/\s+/g,"")+" is the children of "+questionTEM[0]+" ?");
-        //$("#questionTitle").html();​
         $("#questionTitle").html("Q"+seq+" : "+'<mark>' + questionTEM[1].replace(/\s+/g,"") + '</mark>' + " is the children of " + '<mark>' + questionTEM[0] + '</mark>' +" ?");
 
         //delete #1
@@ -387,12 +420,11 @@
             });
         }
         //set progress bar
-        //document.getElementById("slidesProgress").
         var temSeq = seq-1;
         if(temSeq<seqTotal)
         {
             document.getElementById("slidesProgress").style.width= 100*temSeq/seqTotal+"%";
-            $("#slidesProgress").html(100*temSeq/seqTotal+"%");  
+            $("#slidesProgress").html(Math.round(100*temSeq/seqTotal)+"%");  
         }    
         else if(temSeq==seqTotal)
         {
@@ -414,20 +446,6 @@
                 scrollTop: $("#vizSection").offset().top},
                 'slow');
         });
-        //
-        var flip =1;
-        // $("#galleryBTN").click(function() {
-        //     flip=!flip
-        //     if(flip==0)
-        //     {
-        //         document.getElementById('viz').style.display="none";
-        //         $(this).text("back");
-        //     }else{
-        //         document.getElementById('viz').style.display="block";
-        //         $(this).text("gallery");
-
-        //     }    
-        //});
         $("#galleryBTN").click(function() {
             $('html,body').animate({
                 scrollTop: $("#gallerySection").offset().top},

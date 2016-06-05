@@ -7,8 +7,11 @@ var seq =0;
 var obj ={};
 
 //preload all the question from questions_bodypart_trial_10.txt  
+// full - questions_bodypart_trial_10
+// 24 - questions_bodypart_24
+// 10 - questions_bodypart_10
 var questionLists;
-readTextFile("bodypart_full/questions_bodypart_trial_10.txt",function (d){
+readTextFile("bodypart_10/questions_bodypart_10.txt",function (d){
     var fixedResponse = d.split('\n');
     //var jsonObj = JSON.parse(fixedResponse);
     questionLists = fixedResponse;
@@ -75,7 +78,7 @@ io.sockets.on('connection', function(socket) {
             else
                 tem_seq = "0"+seq+".json";
 
-            fs.readFile('bodypart_full/body_part_json_trial_10/'+tem_seq, 'utf8', function (err, data) {
+            fs.readFile('bodypart_10/body_part_json_10/'+tem_seq, 'utf8', function (err, data) {
               if (err) throw err;
               obj.tree = JSON.parse(data);//read the jason tree
               obj.question = questionLists[seq].split(",");//read the question
