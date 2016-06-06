@@ -10,12 +10,9 @@ var SVG_WIDTH = 1000,
     DATA_DIR = 'bodypart_' + NUM_BODYPART;
 
 // Globals we'll manipulate
-// TODO: better way to handle this?
-var nodes,
-    links,
-    trees,
-    questions,
+var trees,
     nameIndex,
+    questions,
     weightMatrix,
     seq = 0;
 
@@ -65,10 +62,11 @@ var queue = queue()
     .defer(d3.text, names_txt)
     .defer(d3.text, weights_txt)
     .defer(d3.text, questions_txt)
-    .defer(d3.json, jsonFile(seq))
+//    .defer(d3.json, jsonFile(seq))
     .await(initialize);
 
 function initialize(error, names_raw, weights_raw, questions_raw, root) {
+//function initialize(error, names_raw, weights_raw, questions_raw, root) {
     if (error) throw error;
 
     // setup nameIndex
@@ -99,53 +97,98 @@ function initialize(error, names_raw, weights_raw, questions_raw, root) {
     questions = questions_raw.split("\n");
     questions.pop(); // Remove empty last string
     questions = questions.map( (raw) => raw.split(",") );
-    
-    // Store stuff in globals
-    // NOTE: keep nodes sorted for transitioning properly
-    nodes = tree.nodes(root).sort((a,b) => sortNames(a.name, b.name));
-    links = tree.links(nodes).sort((a,b) => sortNames(a.target.name, b.target.name));
-    links.forEach(function(link) {
-        var targetIndex = nameIndex[link.target.name];
-            sourceIndex = (link.source.name === 'body_part') ? 0 : 
-                                nameIndex[link.source.name] + 1;
-        link.strength = weightMatrix[seq][targetIndex][sourceIndex];
-    });
-
-    // Create the chart
-    var svg = d3.select("#chart1").append("svg")
-        .attr("width", SVG_WIDTH)
-        .attr("height", SVG_HEIGHT)
-        .append("g")
-        .attr("transform", "translate(" + SVG_OFFSET + ",0)"); 
-
-    // Set up svg elements
-    var link = svg.selectAll("path.link")
-        .data(links)
-      .enter().append("path")
-        .attr("class", "link")
-        .attr("d", diagonal)
-        .attr("stroke", l => color(l.strength))
-        .attr("stroke-width", l => l.strength * STROKE_WIDTH);
-
-    var node = svg.selectAll("g.node")
-        .data(nodes)
-      .enter().append("g")
-        .attr("class", "node")
-        .attr("transform", d => "translate(" + d.y + "," + d.x + ")")
-//        .on("mouseover", highlightNode)
-//        .on("mouseout", unHighlightNode)
-
-    node.append("rect")
-        .attr("width", d => 10 + d.name.length * 6)
-        .attr("x", d => -5 - d.name.length * 3)
-        .attr("height", 20)
-        .attr("y", -10);
-
-    node.append("text")
-        .attr("dy", 4)
-        .attr("text-anchor", "middle")
-        .text(d => d.name);
 }
+
+
+/*****************
+ ** INTERACTION **
+ *****************/
+function scrollToQuestion(){
+}
+
+function createNextQuestion(callback){
+    // Append SVG objects for next question and tree
+
+    // Create the next question
+    var q = d3.select("#timeline").append("div")
+        .attr("class", "row log well col-md-12")
+        .attr("id", "q" + seq)
+    
+    var parent = questions[seq][0],
+        child = questions[seq][1];
+    q.append("h2")
+        .text("Is '" + parent + "' a descendant of '" + child + "'?");
+
+    q.append("button")
+        .attr("class", "yes btn btn-default btn-default-md")
+        .text("Yes")
+
+    q.append("button")
+        .attr("class", "no btn btn-default btn-default-md")
+        .text("No")
+
+    var clicked = false;
+    q.append("button")
+        .attr("class", "next btn btn-default btn-default-md")
+        .text("Next")
+        .on("click", function() {
+            if (clicked++) return; // set clicked true, nifty
+            seq++;
+            createNextQuestion();
+        });
+
+    $('html,body').animate({scrollTop: $("#q"+seq).offset().top}, 'slow');
+
+    if (callback) callback();
+}
+
+//    // Store stuff in globals
+//    // NOTE: keep nodes sorted for transitioning properly
+//    nodes = tree.nodes(root).sort((a,b) => sortNames(a.name, b.name));
+//    links = tree.links(nodes).sort((a,b) => sortNames(a.target.name, b.target.name));
+//    links.forEach(function(link) {
+//        var targetIndex = nameIndex[link.target.name];
+//            sourceIndex = (link.source.name === 'body_part') ? 0 : 
+//                                nameIndex[link.source.name] + 1;
+//        link.strength = weightMatrix[seq][targetIndex][sourceIndex];
+//    });
+//
+//    // Create the chart
+//    var svg = d3.select("#chart1").append("svg")
+//        .attr("width", SVG_WIDTH)
+//        .attr("height", SVG_HEIGHT)
+//        .append("g")
+//        .attr("transform", "translate(" + SVG_OFFSET + ",0)"); 
+//
+//    // Set up svg elements
+//    var link = svg.selectAll("path.link")
+//        .data(links)
+//      .enter().append("path")
+//        .attr("class", "link")
+//        .attr("d", diagonal)
+//        .attr("stroke", l => color(l.strength))
+//        .attr("stroke-width", l => l.strength * STROKE_WIDTH);
+//
+//    var node = svg.selectAll("g.node")
+//        .data(nodes)
+//      .enter().append("g")
+//        .attr("class", "node")
+//        .attr("transform", d => "translate(" + d.y + "," + d.x + ")")
+////        .on("mouseover", highlightNode)
+////        .on("mouseout", unHighlightNode)
+//
+//    node.append("rect")
+//        .attr("width", d => 10 + d.name.length * 6)
+//        .attr("x", d => -5 - d.name.length * 3)
+//        .attr("height", 20)
+//        .attr("y", -10);
+//
+//    node.append("text")
+//        .attr("dy", 4)
+//        .attr("text-anchor", "middle")
+//        .text(d => d.name);
+//}
+
 ////called when user click Yes/No, and the system would send the posterior tree as the input of this function "data"        
 //function updateANS(data){
 //    createSVG("#chart2", 560, 280, function(vis){
@@ -215,10 +258,10 @@ function initialize(error, names_raw, weights_raw, questions_raw, root) {
 
 // setup scrolling buttons
 $("#startBTN").click(function() {
-    $('html,body').animate({
-        scrollTop: $("#vizSection").offset().top},
-        'slow');
+    if (seq > 0) return;
+    createNextQuestion();
 });
+
 $("#galleryBTN").click(function() {
     $('html,body').animate({
         scrollTop: $("#gallerySection").offset().top},
