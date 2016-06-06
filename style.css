@@ -44,11 +44,15 @@ svg {
 }
 
 .node text {
-    font: 10px sans-serif;
+    font-size: 10px;
     text-transform: capitalize;
 }
 
 .link {
+    fill: none;
+}
+
+.highlight {
     fill: none;
 }
 
@@ -79,7 +83,7 @@ svg {
 .block {
   width: 560px; padding: 10px;
   position:relative;
-  display: inline-block; // display inline with abality to provide width/height
+  display: inline-block; /* display inline with abality to provide width/height */
 }
 
 .bold {

@@ -1,13 +1,13 @@
 // Constants
-var SVG_WIDTH = 550,
-    SVG_HEIGHT = 500,
+var SVG_WIDTH = 560,
+    SVG_HEIGHT = 560,
     SVG_OFFSET = 40,
     DURATION = 1000,
     NUM_BODYPART = 10,
     NUM_QUESTIONS = 38,
 //    NUM_BODYPART = 24,
 //    NUM_QUESTIONS = 132,
-    WEIGHT_THRESHOLD = 1 / NUM_BODYPART,
+    WEIGHT_THRESHOLD = 5e-2,
     DATA_DIR = 'bodypart_' + NUM_BODYPART;
 
 // Globals we'll manipulate
@@ -18,7 +18,6 @@ var trees = [],
     seq = 0;
 
 // Initialize tree layout
-//var tree = d3.layout.cluster()
 var layout = d3.layout.tree()
     .size([SVG_HEIGHT, SVG_WIDTH-2*SVG_OFFSET]);
 
@@ -27,12 +26,15 @@ var diagonal = d3.svg.diagonal()
     .projection(d => [d.y, d.x]);
 
 // Interpolate stroke/strokeWidth based on weight strength
+function weight(link) {
+    return 1 - Math.log(link.strength)/Math.log(WEIGHT_THRESHOLD);
+}
 function stroke(link) {
-    return d3.interpolateRgb("#f00", "#000")(link.strength);
+    return d3.interpolateRgb("#f00", "#000")(weight(link));
 }
 
 function strokeWidth(link) {
-    return Math.max(0.5, link.strength*4.0)
+    return d3.interpolate(0.5, 4.0)(weight(link));
 }
 
 // Sorting function to keep everything sane
@@ -73,7 +75,6 @@ queue.await(function(error, names_raw, weights_raw, questions_raw) {
     // Tricky stuff to format the weight matrix manually
     // (d3.csv doesn't work for some reason)
     weightMatrix = weights_raw.split("\n");
-    weightMatrix.shift(); // Remove first row, corresponds to prior
     weightMatrix.pop(); // Remove last row, it's just an empty string
 
     // Reshape rows
@@ -117,7 +118,7 @@ function createNextQuestion(){
     var parent = questions[seq][0],
         child = questions[seq][1];
     q.append("h3")
-        .text("Question " + (seq + 1) +  ") Is '" + child + "' a descendant of '" + parent + "'?");
+        .text("Question " + (seq + 1) +  ") Is '" + child + "' part of '" + parent + "'?");
 
     var yesButton = q.append("button")
         .attr("class", "yes btn btn-default btn-default-md")
@@ -151,7 +152,11 @@ function createNextQuestion(){
         d3.json(jsonFile(seq), function(error, root) {
             if (error) throw error;
             trees.push(root);
-            updateChart(chart);
+            updateChart(chart, function() {
+                var prevChart = row.insert("div", ":first-child")
+                    .attr("class", "block chart");
+                drawChart(prevChart, chart.seq-1)
+            });
             nextButton.style("visibility", "visible");
         })
     }
@@ -178,7 +183,7 @@ function createNextQuestion(){
     });
 }
 
-function drawChart(chart, seq) {
+function drawChart(chart, seq, callback) {
     if (trees.length <= seq) {
         throw "TODO: preload, etc.";
     }
@@ -236,9 +241,11 @@ function drawChart(chart, seq) {
         .attr("dy", 4)
         .attr("text-anchor", "middle")
         .text(d => d.name);
+
+    if (callback) callback();
 }
 
-function updateChart(chart) {
+function updateChart(chart, callback) {
     chart.seq++;
 
     if (trees.length <= chart.seq) {
@@ -277,6 +284,8 @@ function updateChart(chart) {
         .transition()
         .duration(DURATION)
         .attr("transform", d => "translate(" + d.y + "," + d.x + ")");
+
+    if (callback) callback();
 }
 
 function highlightNode(chart, d) {
@@ -290,9 +299,7 @@ function highlightNode(chart, d) {
         index = nameIndex[d.name],
         weights = weightMatrix[chart.seq][index];
     for (var i in weights){ // loops over the name indices
-        if (weights.hasOwnProperty(i) && // Not sure if this is necessary here
-                    chart.nodes[i] !== d.parent &&
-                    weights[i] > WEIGHT_THRESHOLD) {
+        if (weights.hasOwnProperty(i) && weights[i] > WEIGHT_THRESHOLD) {
             highlightLinks.push({
                 source: chart.nodes[i],
                 target: d,
@@ -312,6 +319,9 @@ function highlightNode(chart, d) {
             else return "#fff";
         });
 
+    svg.selectAll("path.link")
+        .style("visibility", "hidden");
+
     svg.selectAll("path.link.highlight")
         .data(highlightLinks)
       .enter().insert("path", ":first-child")
@@ -326,7 +336,8 @@ function unHighlightNode(chart, d) {
         .remove();
 
     chart.selectAll("path.link")
-        .attr("stroke-width", strokeWidth);
+        .attr("stroke-width", strokeWidth)
+        .style("visibility", "visible");
 
     chart.selectAll("g.node rect")
         .style("fill", "#fff");
