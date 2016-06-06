@@ -95,79 +95,104 @@ queue.await(function(error, names_raw, weights_raw, questions_raw) {
 // setup scrolling buttons
 $("#startBTN").click(function() {
     if (seq > 0) return;
-    createNextQuestion();
+    d3.json(jsonFile(seq), function(root) {
+        trees.push(root);
+        createNextQuestion();
+    });
 });
 
 function createNextQuestion(){
     // Append SVG objects for next question and tree
 
-    // Create the next question
+    // Create the next question and buttons
     var q = d3.select("#timeline").append("div")
         .attr("class", "row log well col-md-12")
         .attr("id", "q" + seq);
-    
+
     var parent = questions[seq][0],
         child = questions[seq][1];
     q.append("h3")
-        .text("Is '" + child + "' a descendant of '" + parent + "'?");
+        .text("Question " + (seq + 1) +  ") Is '" + child + "' a descendant of '" + parent + "'?");
 
-    q.append("button")
+    var yesButton = q.append("button")
         .attr("class", "yes btn btn-default btn-default-md")
         .text("Yes")
 
-    q.append("button")
+    var noButton = q.append("button")
         .attr("class", "no btn btn-default btn-default-md")
         .text("No")
 
-    var clicked = false;
-    q.append("button")
-        .attr("class", "next btn btn-default btn-default-md")
+    var nextButton = q.append("button")
+        .attr("class", "next btn btn-default btn-default-md pull-right")
         .text("Next")
-        .on("click", function() {
-            if (clicked++) return; // set clicked true, nifty
-            seq++;
-            createNextQuestion();
-        });
+        .style("visibility", "hidden")
 
-    // Create the first chart
+    // Scroll to new question
+    $('html,body').animate({scrollTop: $("#q"+seq).offset().top}, 'slow');
+
+    // Create the first chart and draw it
     var row = d3.select("#timeline").append("div")
         .attr("class", "row")
         .attr("id", "r" + seq);
 
-    var prevChart = row.append("div")
-        .attr("class", "block prevChart")
+    var chart = row.append("div")
+        .attr("class", "block chart")
 
-    d3.json(jsonFile(seq), function(tree) {
-        trees.push(tree);
-        drawTree(prevChart, seq);
+    drawChart(chart, seq);
+
+    // Set up the buttons
+    function update() {
+        seq++;
+        d3.json(jsonFile(seq), function(error, root) {
+            if (error) throw error;
+            trees.push(root);
+            updateChart(chart);
+            q.select("button.next").style("visibility", "visible");
+        })
+    }
+
+    var yesNoClicked = false;
+    yesButton.on("click", function() {
+        if (yesNoClicked++) return;
+        q.select("button.no").style("visibility", "hidden");
+        update()
     });
 
-    // Scroll to new question
-    $('html,body').animate({scrollTop: $("#q"+seq).offset().top}, 'slow');
+    noButton.on("click", function() {
+        if (yesNoClicked++) return;
+        q.select("button.yes").style("visibility", "hidden");
+        update()
+    });
+
+    var nextClicked = false;
+    nextButton.on("click", function() {
+        if (!yesNoClicked) return;
+        if (nextClicked++) return; // set clicked true, nifty
+        createNextQuestion();
+    });
 }
 
-function drawTree(chart, seq) {
+function drawChart(chart, seq) {
     if (trees.length <= seq) {
         throw "TODO: preload, etc.";
     }
 
+    // Store the sequence number
+    chart.seq = seq;
+
     // NOTE: keep nodes sorted for transitioning properly
     var root = trees[seq]
-
     var nodes = layout.nodes(root).sort((a,b) => sortNames(a.name, b.name));
-    // TODO: Store hiddenlinks
-
-    // Create links
     var links = layout.links(nodes).sort((a,b) => sortNames(a.target.name, b.target.name));
 
     // Store edge strength
+    // TODO: Store hiddenLinks
     links.forEach(function(link) {
         var targetIndex = nameIndex[link.target.name];
             sourceIndex = (link.source.name === 'body_part') ? 0 :
                                 nameIndex[link.source.name] + 1;
         link.strength = weightMatrix[seq][targetIndex][sourceIndex];
     });
-
 
     // Create the chart
     var svg = chart.append("svg")
@@ -203,4 +228,43 @@ function drawTree(chart, seq) {
         .attr("dy", 4)
         .attr("text-anchor", "middle")
         .text(d => d.name);
+}
+
+function updateChart(chart) {
+    chart.seq++;
+
+    if (trees.length <= chart.seq) {
+        throw "TODO: preload, etc.";
+    }
+
+    // NOTE: keep nodes sorted for transitioning properly
+    console.log(trees);
+    console.log(chart.seq);
+    var root = trees[chart.seq]
+    var nodes = layout.nodes(root).sort((a,b) => sortNames(a.name, b.name));
+    var links = layout.links(nodes).sort((a,b) => sortNames(a.target.name, b.target.name));
+
+    // Store edge strength
+    // TODO: Store hiddenlinks
+    links.forEach(function(link) {
+        var targetIndex = nameIndex[link.target.name];
+            sourceIndex = (link.source.name === 'body_part') ? 0 :
+                                nameIndex[link.source.name] + 1;
+        link.strength = weightMatrix[chart.seq][targetIndex][sourceIndex];
+    });
+
+    // Update chart with smooth transition
+    var link = chart.selectAll("path.link")
+        .data(links)
+        .transition()
+        .duration(DURATION)
+        .attr("d", diagonal)
+        .style("stroke", l => color(l.strength))
+        .style("stroke-width", l => Math.max(1.0, l.strength * STROKE_WIDTH));
+
+    var node = chart.selectAll("g.node")
+        .data(nodes)
+        .transition()
+        .duration(DURATION)
+        .attr("transform", d => "translate(" + d.y + "," + d.x + ")");
 }
