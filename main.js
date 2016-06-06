@@ -144,7 +144,11 @@ function createNextQuestion(){
     var chart = row.append("div")
         .attr("class", "block chart")
 
-    drawChart(chart, seq);
+    chart.seq = seq;
+    chart.qChild = child;
+    chart.qParent = parent;
+
+    initChart(chart, unHighlightNode); // TODO: hack
 
     // Set up the buttons
     function update() {
@@ -155,7 +159,10 @@ function createNextQuestion(){
             updateChart(chart, function() {
                 var prevChart = row.insert("div", ":first-child")
                     .attr("class", "block chart");
-                drawChart(prevChart, chart.seq-1)
+                prevChart.seq = chart.seq - 1;
+                prevChart.qChild = child;
+                prevChart.qParent = parent;
+                initChart(prevChart, unHighlightNode)
             });
             nextButton.style("visibility", "visible");
         })
@@ -183,7 +190,9 @@ function createNextQuestion(){
     });
 }
 
-function drawChart(chart, seq, callback) {
+function initChart(chart, callback) {
+    var seq = chart.seq;
+
     if (trees.length <= seq) {
         throw "TODO: preload, etc.";
     }
@@ -199,7 +208,6 @@ function drawChart(chart, seq, callback) {
     chart.links = links;
 
     // Store edge strength
-    // TODO: Store hiddenLinks
     links.forEach(function(link) {
         var targetIndex = nameIndex[link.target.name];
             sourceIndex = (link.source.name === 'body_part') ? 0 :
@@ -229,7 +237,7 @@ function drawChart(chart, seq, callback) {
         .attr("class", "node")
         .attr("transform", d => "translate(" + d.y + "," + d.x + ")")
         .on("mouseover", d => highlightNode(chart, d))
-        .on("mouseout", d => unHighlightNode(chart, d));
+        .on("mouseout", d => unHighlightNode(chart)); // TODO: hacky
 
     node.append("rect")
         .attr("width", d => 10 + d.name.length * 6)
@@ -242,7 +250,7 @@ function drawChart(chart, seq, callback) {
         .attr("text-anchor", "middle")
         .text(d => d.name);
 
-    if (callback) callback();
+    if (callback) callback(chart);
 }
 
 function updateChart(chart, callback) {
@@ -285,7 +293,7 @@ function updateChart(chart, callback) {
         .duration(DURATION)
         .attr("transform", d => "translate(" + d.y + "," + d.x + ")");
 
-    if (callback) callback();
+    if (callback) callback(chart);
 }
 
 function highlightNode(chart, d) {
@@ -331,7 +339,7 @@ function highlightNode(chart, d) {
         .attr("stroke-width", strokeWidth);
 }
 
-function unHighlightNode(chart, d) {
+function unHighlightNode(chart) {
     chart.selectAll("path.link.highlight")
         .remove();
 
@@ -340,5 +348,9 @@ function unHighlightNode(chart, d) {
         .style("visibility", "visible");
 
     chart.selectAll("g.node rect")
-        .style("fill", "#fff");
+        .style("fill", function(node) {
+            if (node.name === chart.qChild) return "#ff9";
+            if (node.name === chart.qParent) return "#99f";
+            else return "#fff";
+        });
 }
