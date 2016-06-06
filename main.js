@@ -3,7 +3,6 @@ var SVG_WIDTH = 550,
     SVG_HEIGHT = 500,
     SVG_OFFSET = 40,
     DURATION = 1000,
-    STROKE_WIDTH = 4.0,
     NUM_BODYPART = 10,
     NUM_QUESTIONS = 38,
 //    NUM_BODYPART = 24,
@@ -27,8 +26,14 @@ var layout = d3.layout.tree()
 var diagonal = d3.svg.diagonal()
     .projection(d => [d.y, d.x]);
 
-// Interpolate color based on weight strength
-var color = d3.interpolateRgb("#f00", "#000");
+// Interpolate stroke/strokeWidth based on weight strength
+function stroke(link) {
+    return d3.interpolateRgb("#f00", "#000")(link.strength);
+}
+
+function strokeWidth(link) {
+    return Math.max(0.5, link.strength*4.0)
+}
 
 // Sorting function to keep everything sane
 // NOTE: this is annoying because of the weightMatrix ordering
@@ -210,8 +215,8 @@ function drawChart(chart, seq) {
       .enter().append("path")
         .attr("class", "link")
         .attr("d", diagonal)
-        .attr("stroke", l => color(l.strength))
-        .attr("stroke-width", l => Math.max(1.0, l.strength * STROKE_WIDTH));
+        .attr("stroke", stroke)
+        .attr("stroke-width", strokeWidth);
 
     var node = svg.selectAll("g.node")
         .data(nodes)
@@ -264,8 +269,8 @@ function updateChart(chart) {
         .transition()
         .duration(DURATION)
         .attr("d", diagonal)
-        .style("stroke", l => color(l.strength))
-        .style("stroke-width", l => Math.max(1.0, l.strength * STROKE_WIDTH));
+        .style("stroke", stroke)
+        .style("stroke-width", strokeWidth);
 
     var node = chart.selectAll("g.node")
         .data(nodes)
@@ -312,8 +317,8 @@ function highlightNode(chart, d) {
       .enter().insert("path", ":first-child")
         .attr("class", "link highlight")
         .attr("d", diagonal)
-        .attr("stroke", l => color(l.strength))
-        .attr("stroke-width", l => Math.max(1.0, l.strength * STROKE_WIDTH));
+        .attr("stroke", stroke)
+        .attr("stroke-width", strokeWidth);
 }
 
 function unHighlightNode(chart, d) {
@@ -321,7 +326,7 @@ function unHighlightNode(chart, d) {
         .remove();
 
     chart.selectAll("path.link")
-        .attr("stroke-width", l => Math.max(1.0, l.strength * STROKE_WIDTH));
+        .attr("stroke-width", strokeWidth);
 
     chart.selectAll("g.node rect")
         .style("fill", "#fff");
