@@ -1,24 +1,26 @@
 // Constants
-var SVG_WIDTH = 1000,
+var SVG_WIDTH = 550,
     SVG_HEIGHT = 500,
     SVG_OFFSET = 40,
     DURATION = 1000,
     STROKE_WIDTH = 3.0,
     NUM_BODYPART = 10,
-    NUM_QUESTIONS = 132,
+    NUM_QUESTIONS = 38,
+//    NUM_BODYPART = 24,
+//    NUM_QUESTIONS = 132,
     WEIGHT_THRESHOLD = 1 / NUM_BODYPART,
     DATA_DIR = 'bodypart_' + NUM_BODYPART;
 
 // Globals we'll manipulate
-var trees,
-    nameIndex,
-    questions,
-    weightMatrix,
+var trees = [],
+    nameIndex = {},
+    questions = [],
+    weightMatrix = [],
     seq = 0;
 
 // Initialize tree layout
 //var tree = d3.layout.cluster()
-var tree = d3.layout.tree()
+var layout = d3.layout.tree()
     .size([SVG_HEIGHT, SVG_WIDTH-2*SVG_OFFSET]);
 
 // Flip x/y to get left to right tree
@@ -36,16 +38,6 @@ function sortNames(a,b) {
     return nameIndex[a] - nameIndex[b];
 }
 
-// Create swiper (magic!)
-var swiper = new Swiper('.swiper-container', {
-    scrollbar: '.swiper-scrollbar',
-    scrollbarHide: true,
-    slidesPerView: 'auto',
-    centeredSlides: true,
-    spaceBetween: 30,
-    grabCursor: true
-});
-
 /********************
  ** INITIALIZATION **
  ********************/
@@ -61,12 +53,9 @@ function jsonFile(seq) {
 var queue = queue()
     .defer(d3.text, names_txt)
     .defer(d3.text, weights_txt)
-    .defer(d3.text, questions_txt)
-//    .defer(d3.json, jsonFile(seq))
-    .await(initialize);
+    .defer(d3.text, questions_txt);
 
-function initialize(error, names_raw, weights_raw, questions_raw, root) {
-//function initialize(error, names_raw, weights_raw, questions_raw, root) {
+queue.await(function(error, names_raw, weights_raw, questions_raw) {
     if (error) throw error;
 
     // setup nameIndex
@@ -92,31 +81,28 @@ function initialize(error, names_raw, weights_raw, questions_raw, root) {
         }
         return matrix;
     });
-    
+
     // Parse questions
     questions = questions_raw.split("\n");
     questions.pop(); // Remove empty last string
     questions = questions.map( (raw) => raw.split(",") );
-}
+});
 
 
 /*****************
  ** INTERACTION **
  *****************/
-function scrollToQuestion(){
-}
-
-function createNextQuestion(callback){
+function createNextQuestion(){
     // Append SVG objects for next question and tree
 
     // Create the next question
     var q = d3.select("#timeline").append("div")
         .attr("class", "row log well col-md-12")
-        .attr("id", "q" + seq)
+        .attr("id", "q" + seq);
     
     var parent = questions[seq][0],
         child = questions[seq][1];
-    q.append("h2")
+    q.append("h3")
         .text("Is '" + parent + "' a descendant of '" + child + "'?");
 
     q.append("button")
@@ -137,57 +123,82 @@ function createNextQuestion(callback){
             createNextQuestion();
         });
 
-    $('html,body').animate({scrollTop: $("#q"+seq).offset().top}, 'slow');
+    // Create the first chart
+    var row = d3.select("#timeline").append("div")
+        .attr("class", "row")
+        .attr("id", "r" + seq);
 
-    if (callback) callback();
+    var prevChart = row.append("div")
+        .attr("class", "block prevChart")
+
+    d3.json(jsonFile(seq), function(tree) {
+        trees.push(tree);
+        drawTree(prevChart, seq);
+    });
+
+    // Scroll to new question
+    $('html,body').animate({scrollTop: $("#q"+seq).offset().top}, 'slow');
 }
 
-//    // Store stuff in globals
-//    // NOTE: keep nodes sorted for transitioning properly
-//    nodes = tree.nodes(root).sort((a,b) => sortNames(a.name, b.name));
-//    links = tree.links(nodes).sort((a,b) => sortNames(a.target.name, b.target.name));
-//    links.forEach(function(link) {
-//        var targetIndex = nameIndex[link.target.name];
-//            sourceIndex = (link.source.name === 'body_part') ? 0 : 
-//                                nameIndex[link.source.name] + 1;
-//        link.strength = weightMatrix[seq][targetIndex][sourceIndex];
-//    });
-//
-//    // Create the chart
-//    var svg = d3.select("#chart1").append("svg")
-//        .attr("width", SVG_WIDTH)
-//        .attr("height", SVG_HEIGHT)
-//        .append("g")
-//        .attr("transform", "translate(" + SVG_OFFSET + ",0)"); 
-//
-//    // Set up svg elements
-//    var link = svg.selectAll("path.link")
-//        .data(links)
-//      .enter().append("path")
-//        .attr("class", "link")
-//        .attr("d", diagonal)
-//        .attr("stroke", l => color(l.strength))
-//        .attr("stroke-width", l => l.strength * STROKE_WIDTH);
-//
-//    var node = svg.selectAll("g.node")
-//        .data(nodes)
-//      .enter().append("g")
-//        .attr("class", "node")
-//        .attr("transform", d => "translate(" + d.y + "," + d.x + ")")
-////        .on("mouseover", highlightNode)
-////        .on("mouseout", unHighlightNode)
-//
-//    node.append("rect")
-//        .attr("width", d => 10 + d.name.length * 6)
-//        .attr("x", d => -5 - d.name.length * 3)
-//        .attr("height", 20)
-//        .attr("y", -10);
-//
-//    node.append("text")
-//        .attr("dy", 4)
-//        .attr("text-anchor", "middle")
-//        .text(d => d.name);
-//}
+function drawTree(chart, seq) {
+    if (trees.length <= seq) {
+        throw "TODO: preload, etc.";
+    }
+
+    // NOTE: keep nodes sorted for transitioning properly
+    var root = trees[seq]
+
+    var nodes = layout.nodes(root).sort((a,b) => sortNames(a.name, b.name));
+    // TODO: Store hiddenlinks
+
+    // Create links
+    var links = layout.links(nodes).sort((a,b) => sortNames(a.target.name, b.target.name));
+
+    // Store edge strength
+    links.forEach(function(link) {
+        var targetIndex = nameIndex[link.target.name];
+            sourceIndex = (link.source.name === 'body_part') ? 0 :
+                                nameIndex[link.source.name] + 1;
+        link.strength = weightMatrix[seq][targetIndex][sourceIndex];
+    });
+
+
+    // Create the chart
+    var svg = chart.append("svg")
+        .attr("width", SVG_WIDTH)
+        .attr("height", SVG_HEIGHT)
+      .append("g")
+        .attr("transform", "translate(" + SVG_OFFSET + ",0)");
+
+    // Set up svg elements
+    var link = svg.selectAll("path.link")
+        .data(links)
+      .enter().append("path")
+        .attr("class", "link")
+        .attr("d", diagonal)
+        .attr("stroke", l => color(l.strength))
+        .attr("stroke-width", l => 3 + Math.log10(l.strength));
+
+    var node = svg.selectAll("g.node")
+        .data(nodes)
+      .enter().append("g")
+        .attr("class", "node")
+        .attr("transform", d => "translate(" + d.y + "," + d.x + ")")
+//        .on("mouseover", highlightNode)
+//        .on("mouseout", unHighlightNode)
+
+    node.append("rect")
+        .attr("width", d => 10 + d.name.length * 6)
+        .attr("x", d => -5 - d.name.length * 3)
+        .attr("height", 20)
+        .attr("y", -10);
+
+    node.append("text")
+        .attr("dy", 4)
+        .attr("text-anchor", "middle")
+        .text(d => d.name);
+}
+
 
 ////called when user click Yes/No, and the system would send the posterior tree as the input of this function "data"        
 //function updateANS(data){
