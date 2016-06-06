@@ -309,12 +309,11 @@ function highlightNode(chart, d) {
 
     svg.selectAll("path.link.highlight")
         .data(highlightLinks)
-      .enter().append("path")
+      .enter().insert("path", ":first-child")
         .attr("class", "link highlight")
         .attr("d", diagonal)
-        .attr("stroke", l => 10)
-        .attr("stroke-width", 10);
-//        .attr("stroke-width", l => Math.max(1.0, l.strength * STROKE_WIDTH));
+        .attr("stroke", l => color(l.strength))
+        .attr("stroke-width", l => Math.max(1.0, l.strength * STROKE_WIDTH));
 }
 
 function unHighlightNode(chart, d) {
