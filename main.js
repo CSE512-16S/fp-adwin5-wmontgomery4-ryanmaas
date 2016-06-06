@@ -147,20 +147,20 @@ function createNextQuestion(){
             if (error) throw error;
             trees.push(root);
             updateChart(chart);
-            q.select("button.next").style("visibility", "visible");
+            nextButton.style("visibility", "visible");
         })
     }
 
     var yesNoClicked = false;
     yesButton.on("click", function() {
         if (yesNoClicked++) return;
-        q.select("button.no").style("visibility", "hidden");
+        noButton.style("visibility", "hidden");
         update()
     });
 
     noButton.on("click", function() {
         if (yesNoClicked++) return;
-        q.select("button.yes").style("visibility", "hidden");
+        yesButton.style("visibility", "hidden");
         update()
     });
 
@@ -168,6 +168,7 @@ function createNextQuestion(){
     nextButton.on("click", function() {
         if (!yesNoClicked) return;
         if (nextClicked++) return; // set clicked true, nifty
+        nextButton.style("visibility", "hidden");
         createNextQuestion();
     });
 }
@@ -177,13 +178,15 @@ function drawChart(chart, seq) {
         throw "TODO: preload, etc.";
     }
 
-    // Store the sequence number
-    chart.seq = seq;
-
     // NOTE: keep nodes sorted for transitioning properly
     var root = trees[seq]
     var nodes = layout.nodes(root).sort((a,b) => sortNames(a.name, b.name));
     var links = layout.links(nodes).sort((a,b) => sortNames(a.target.name, b.target.name));
+
+    // Store stuff for easier access
+    chart.seq = seq;
+    chart.nodes = nodes;
+    chart.links = links;
 
     // Store edge strength
     // TODO: Store hiddenLinks
@@ -215,8 +218,8 @@ function drawChart(chart, seq) {
       .enter().append("g")
         .attr("class", "node")
         .attr("transform", d => "translate(" + d.y + "," + d.x + ")")
-//        .on("mouseover", highlightNode)
-//        .on("mouseout", unHighlightNode)
+        .on("mouseover", d => highlightNode(chart, d))
+        .on("mouseout", d => unHighlightNode(chart, d));
 
     node.append("rect")
         .attr("width", d => 10 + d.name.length * 6)
@@ -238,11 +241,13 @@ function updateChart(chart) {
     }
 
     // NOTE: keep nodes sorted for transitioning properly
-    console.log(trees);
-    console.log(chart.seq);
     var root = trees[chart.seq]
     var nodes = layout.nodes(root).sort((a,b) => sortNames(a.name, b.name));
     var links = layout.links(nodes).sort((a,b) => sortNames(a.target.name, b.target.name));
+
+    // Store stuff for easier access
+    chart.nodes = nodes;
+    chart.links = links;
 
     // Store edge strength
     // TODO: Store hiddenlinks
@@ -267,4 +272,58 @@ function updateChart(chart) {
         .transition()
         .duration(DURATION)
         .attr("transform", d => "translate(" + d.y + "," + d.x + ")");
+}
+
+function highlightNode(chart, d) {
+    // Don't highlight 'body_part'
+    if (d.name === 'body_part') return;
+
+    // Set up the new hiddenLinks
+    // NOTE: this requires some tricky indexing because the ordering
+    //       of nodes in the tree differs from the alphabetical order
+    var highlightLinks = [],
+        index = nameIndex[d.name],
+        weights = weightMatrix[chart.seq][index];
+    for (var i in weights){ // loops over the name indices
+        if (weights.hasOwnProperty(i) && // Not sure if this is necessary here
+                    chart.nodes[i] !== d.parent &&
+                    weights[i] > WEIGHT_THRESHOLD) {
+            highlightLinks.push({
+                source: chart.nodes[i],
+                target: d,
+                strength: weights[i],
+            });
+        }
+    }
+
+    var svg = chart.select("svg").select("g");
+
+    svg.selectAll("g.node rect")
+        // TODO: make more efficient
+        .style("fill", function(node) {
+            if (node.name === d.name) return "#ff9";
+            if (highlightLinks.find(link => link.source.name === node.name) ||
+                node.name === d.parent.name) return "#99f";
+            else return "#fff";
+        });
+
+    svg.selectAll("path.link.highlight")
+        .data(highlightLinks)
+      .enter().append("path")
+        .attr("class", "link highlight")
+        .attr("d", diagonal)
+        .attr("stroke", l => 10)
+        .attr("stroke-width", 10);
+//        .attr("stroke-width", l => Math.max(1.0, l.strength * STROKE_WIDTH));
+}
+
+function unHighlightNode(chart, d) {
+    chart.selectAll("path.link.highlight")
+        .remove();
+
+    chart.selectAll("path.link")
+        .attr("stroke-width", l => Math.max(1.0, l.strength * STROKE_WIDTH));
+
+    chart.selectAll("g.node rect")
+        .style("fill", "#fff");
 }
