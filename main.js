@@ -3,7 +3,7 @@ var SVG_SIZE = 500,
     SVG_OFFSET = 20,
     DURATION = 1000,
     STROKE_WIDTH = 3.0,
-    NUM_BODYPART = 24,
+    NUM_BODYPART = 10,
     NUM_QUESTIONS = 132,
     WEIGHT_THRESHOLD = 1 / NUM_BODYPART,
     DATA_DIR = 'bodypart_' + NUM_BODYPART;
@@ -21,7 +21,7 @@ var nodes,
 // Initialize tree layout
 //var tree = d3.layout.cluster()
 var tree = d3.layout.tree()
-    .size([SVG_SIZE, SVG_SIZE-SVG_OFFSET]);
+    .size([SVG_SIZE, SVG_SIZE-2*SVG_OFFSET]);
 
 // Flip x/y to get left to right tree
 var diagonal = d3.svg.diagonal()
@@ -98,7 +98,6 @@ function initialize(error, names_raw, weights_raw, questions_raw, root) {
     questions = questions_raw.split("\n");
     questions.pop(); // Remove empty last string
     questions = questions.map( (raw) => raw.split(",") );
-
     
     // Store stuff in globals
     // NOTE: keep nodes sorted for transitioning properly
