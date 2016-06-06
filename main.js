@@ -1,6 +1,7 @@
 // Constants
-var SVG_SIZE = 500,
-    SVG_OFFSET = 20,
+var SVG_WIDTH = 1000,
+    SVG_HEIGHT = 500,
+    SVG_OFFSET = 40,
     DURATION = 1000,
     STROKE_WIDTH = 3.0,
     NUM_BODYPART = 10,
@@ -21,7 +22,7 @@ var nodes,
 // Initialize tree layout
 //var tree = d3.layout.cluster()
 var tree = d3.layout.tree()
-    .size([SVG_SIZE, SVG_SIZE-2*SVG_OFFSET]);
+    .size([SVG_HEIGHT, SVG_WIDTH-2*SVG_OFFSET]);
 
 // Flip x/y to get left to right tree
 var diagonal = d3.svg.diagonal()
@@ -112,8 +113,8 @@ function initialize(error, names_raw, weights_raw, questions_raw, root) {
 
     // Create the chart
     var svg = d3.select("#chart1").append("svg")
-        .attr("width", SVG_SIZE)
-        .attr("height", SVG_SIZE)
+        .attr("width", SVG_WIDTH)
+        .attr("height", SVG_HEIGHT)
         .append("g")
         .attr("transform", "translate(" + SVG_OFFSET + ",0)"); 
 
@@ -135,91 +136,16 @@ function initialize(error, names_raw, weights_raw, questions_raw, root) {
 //        .on("mouseout", unHighlightNode)
 
     node.append("rect")
-        .attr("width", 85)
+        .attr("width", d => 10 + d.name.length * 6)
+        .attr("x", d => -5 - d.name.length * 3)
         .attr("height", 20)
-        .attr("x", -25)
         .attr("y", -10);
 
     node.append("text")
         .attr("dy", 4)
-        .attr("dx", -20)
-        .attr("text-anchor", "start")
+        .attr("text-anchor", "middle")
         .text(d => d.name);
 }
-
-//function createSVG(stage, widthSVG, transSVG, callback){
-//            vis = d3.select(stage).append("svg:svg")
-//                .attr("width", widthSVG)
-//                .attr("height", widthSVG)
-//                .append("svg:g")
-//                .attr("transform", "translate("+transSVG+", "+transSVG+")"); 
-//            callback(vis);        
-//}
-//function render(vis,actual_JSON, stage){
-//            var treeData = actual_JSON.value.tree;
-//            var question = actual_JSON.value.question;
-//            var seqKeyword;
-//            
-//            // Create a cluster "canvas"
-//            var cluster = d3.layout.cluster()
-//            .size([300,150]);
-// 
-//            var diagonal = d3.svg.diagonal.radial()
-//            .projection(function(d) { return [d.y, d.x / 180 * Math.PI]; });
-//             
-//            var nodes = cluster.nodes(treeData);
-//            var links = cluster.links(nodes);
-// 
-//            var link = vis.selectAll("pathlink")
-//            .data(links)
-//            .enter().append("svg:path")
-//            .attr("class", "link")
-//            .attr("d", diagonal)
-// 
-//            var node = vis.selectAll("g.node")
-//                .data(nodes)
-//                .enter().append("svg:g")
-//                .attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
-// 
-//            // Add the dot at every node
-//            node.append("svg:circle")
-//                .attr("r", 3.5);
-// 
-//            node.append("svg:text")
-//                .attr("dx", function(d) { return d.x < 180 ? 8 : -8; })
-//                .attr("dy", ".31em")
-//                .attr("fill", 
-//                    function(d){//highlight the chosen node
-//                        if(stage == "#chart2")
-//                            seqKeyword = seq-1;
-//                        else
-//                            seqKeyword = seq;
-//                        if(d.name == question[0]||d.name == question[1].replace(/\s+/g,"")) return "red";
-//                        else    return "black";
-//                    })
-//                .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
-//                .attr("transform", function(d) { return d.x < 180 ? null : "rotate(180)"; })
-//                .text(function(d) { return d.name; });
-//            
-//        }    
-
-//function updateINIT(data){
-//        //set next invisible initially
-//        document.getElementById("next_question").style.visibility="hidden";
-//
-//        createSVG("#chart1", 560, 280, function(vis){   
-//            render(vis, data, "#chart1");  
-//        });
-//        //plot to the slide
-//        $('#s0').empty()
-//        createSVG("#s"+seq, 500, 250, function(vis){
-//            render(vis, data, "#s0");  
-//        });    
-//        //set question title
-//        $("#questionTitle").html("Q1 : "+'<mark>' + data.value.question[1].replace(/\s+/g,"") + '</mark>' + " is the children of " + '<mark>' + data.value.question[0] + '</mark>' +" ?");
-//        seq++;
-//}
-
 ////called when user click Yes/No, and the system would send the posterior tree as the input of this function "data"        
 //function updateANS(data){
 //    createSVG("#chart2", 560, 280, function(vis){
@@ -383,3 +309,77 @@ $('#animationBTNBack').click(function() {
 //document.getElementById("next_question").addEventListener("click", nextQuestionButtonClicked);
 //document.getElementById("restartBTN").addEventListener("click", restartButtonClicked);
 //document.getElementById("restartBTN").style.visibility="hidden";
+
+//function createSVG(stage, widthSVG, transSVG, callback){
+//            vis = d3.select(stage).append("svg:svg")
+//                .attr("width", widthSVG)
+//                .attr("height", widthSVG)
+//                .append("svg:g")
+//                .attr("transform", "translate("+transSVG+", "+transSVG+")"); 
+//            callback(vis);        
+//}
+//function render(vis,actual_JSON, stage){
+//            var treeData = actual_JSON.value.tree;
+//            var question = actual_JSON.value.question;
+//            var seqKeyword;
+//            
+//            // Create a cluster "canvas"
+//            var cluster = d3.layout.cluster()
+//            .size([300,150]);
+// 
+//            var diagonal = d3.svg.diagonal.radial()
+//            .projection(function(d) { return [d.y, d.x / 180 * Math.PI]; });
+//             
+//            var nodes = cluster.nodes(treeData);
+//            var links = cluster.links(nodes);
+// 
+//            var link = vis.selectAll("pathlink")
+//            .data(links)
+//            .enter().append("svg:path")
+//            .attr("class", "link")
+//            .attr("d", diagonal)
+// 
+//            var node = vis.selectAll("g.node")
+//                .data(nodes)
+//                .enter().append("svg:g")
+//                .attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
+// 
+//            // Add the dot at every node
+//            node.append("svg:circle")
+//                .attr("r", 3.5);
+// 
+//            node.append("svg:text")
+//                .attr("dx", function(d) { return d.x < 180 ? 8 : -8; })
+//                .attr("dy", ".31em")
+//                .attr("fill", 
+//                    function(d){//highlight the chosen node
+//                        if(stage == "#chart2")
+//                            seqKeyword = seq-1;
+//                        else
+//                            seqKeyword = seq;
+//                        if(d.name == question[0]||d.name == question[1].replace(/\s+/g,"")) return "red";
+//                        else    return "black";
+//                    })
+//                .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
+//                .attr("transform", function(d) { return d.x < 180 ? null : "rotate(180)"; })
+//                .text(function(d) { return d.name; });
+//            
+//        }    
+
+//function updateINIT(data){
+//        //set next invisible initially
+//        document.getElementById("next_question").style.visibility="hidden";
+//
+//        createSVG("#chart1", 560, 280, function(vis){   
+//            render(vis, data, "#chart1");  
+//        });
+//        //plot to the slide
+//        $('#s0').empty()
+//        createSVG("#s"+seq, 500, 250, function(vis){
+//            render(vis, data, "#s0");  
+//        });    
+//        //set question title
+//        $("#questionTitle").html("Q1 : "+'<mark>' + data.value.question[1].replace(/\s+/g,"") + '</mark>' + " is the children of " + '<mark>' + data.value.question[0] + '</mark>' +" ?");
+//        seq++;
+//}
+
