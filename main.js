@@ -1,7 +1,7 @@
 // Constants
 var SVG_WIDTH = 560,
     SVG_HEIGHT = 560,
-    SVG_OFFSET = 40,
+    SVG_OFFSET = 30,
     DURATION = 1000,
     NUM_BODYPART = 10,
     NUM_QUESTIONS = 38,
@@ -19,7 +19,7 @@ var trees = [],
 
 // Initialize tree layout
 var layout = d3.layout.tree()
-    .size([SVG_HEIGHT, SVG_WIDTH-2*SVG_OFFSET]);
+    .size([SVG_HEIGHT, SVG_WIDTH-2.5*SVG_OFFSET]);
 
 // Flip x/y to get left to right tree
 var diagonal = d3.svg.diagonal()
@@ -40,8 +40,8 @@ function strokeWidth(link) {
 // Sorting function to keep everything sane
 // NOTE: this is annoying because of the weightMatrix ordering
 function sortNames(a,b) {
-    if (a === 'body_part') return -1;
-    if (b === 'body_part') return 1;
+    if (a === 'body') return -1;
+    if (b === 'body') return 1;
     return nameIndex[a] - nameIndex[b];
 }
 
@@ -210,7 +210,7 @@ function initChart(chart, callback) {
     // Store edge strength
     links.forEach(function(link) {
         var targetIndex = nameIndex[link.target.name];
-            sourceIndex = (link.source.name === 'body_part') ? 0 :
+            sourceIndex = (link.source.name === 'body') ? 0 :
                                 nameIndex[link.source.name] + 1;
         link.strength = weightMatrix[seq][targetIndex][sourceIndex];
     });
@@ -273,7 +273,7 @@ function updateChart(chart, callback) {
     // TODO: Store hiddenlinks
     links.forEach(function(link) {
         var targetIndex = nameIndex[link.target.name];
-            sourceIndex = (link.source.name === 'body_part') ? 0 :
+            sourceIndex = (link.source.name === 'body') ? 0 :
                                 nameIndex[link.source.name] + 1;
         link.strength = weightMatrix[chart.seq][targetIndex][sourceIndex];
     });
@@ -297,8 +297,8 @@ function updateChart(chart, callback) {
 }
 
 function highlightNode(chart, d) {
-    // Don't highlight 'body_part'
-    if (d.name === 'body_part') return;
+    // Don't highlight 'body'
+    if (d.name === 'body') return;
 
     // Set up the new hiddenLinks
     // NOTE: this requires some tricky indexing because the ordering
