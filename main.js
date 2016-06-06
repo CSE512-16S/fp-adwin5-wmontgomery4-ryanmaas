@@ -3,7 +3,7 @@ var SVG_WIDTH = 550,
     SVG_HEIGHT = 500,
     SVG_OFFSET = 40,
     DURATION = 1000,
-    STROKE_WIDTH = 3.0,
+    STROKE_WIDTH = 4.0,
     NUM_BODYPART = 10,
     NUM_QUESTIONS = 38,
 //    NUM_BODYPART = 24,
@@ -92,6 +92,12 @@ queue.await(function(error, names_raw, weights_raw, questions_raw) {
 /*****************
  ** INTERACTION **
  *****************/
+// setup scrolling buttons
+$("#startBTN").click(function() {
+    if (seq > 0) return;
+    createNextQuestion();
+});
+
 function createNextQuestion(){
     // Append SVG objects for next question and tree
 
@@ -103,7 +109,7 @@ function createNextQuestion(){
     var parent = questions[seq][0],
         child = questions[seq][1];
     q.append("h3")
-        .text("Is '" + parent + "' a descendant of '" + child + "'?");
+        .text("Is '" + child + "' a descendant of '" + parent + "'?");
 
     q.append("button")
         .attr("class", "yes btn btn-default btn-default-md")
@@ -177,7 +183,7 @@ function drawTree(chart, seq) {
         .attr("class", "link")
         .attr("d", diagonal)
         .attr("stroke", l => color(l.strength))
-        .attr("stroke-width", l => 3 + Math.log10(l.strength));
+        .attr("stroke-width", l => Math.max(1.0, l.strength * STROKE_WIDTH));
 
     var node = svg.selectAll("g.node")
         .data(nodes)
@@ -198,242 +204,3 @@ function drawTree(chart, seq) {
         .attr("text-anchor", "middle")
         .text(d => d.name);
 }
-
-
-////called when user click Yes/No, and the system would send the posterior tree as the input of this function "data"        
-//function updateANS(data){
-//    createSVG("#chart2", 560, 280, function(vis){
-//        //do the transition animation [from the current state to next state]*************************
-//
-//
-//
-//        //
-//        render(vis, data, "#chart2");//right now just plot the posterior json tree// the last state tree can be acquired by dataHistory  
-//    });
-//    //plot this to slides
-//    if(seq<33)
-//    {
-//        $("#s"+seq).empty()
-//        createSVG("#s"+seq, 500, 250, function(vis){
-//            render(vis, data, "#s0");  
-//        });    
-//        //plot question on slides
-//        d3.select("#s"+seq).select("svg").append("text").text("Q"+seq+" : "+data.value.question[1].replace(/\s+/g,"") +" <- "+data.value.question[0]+" ?").attr("x",250).attr("y",20).attr("font-size",25)
-//            .attr("font-family","serif")
-//            .attr("text-anchor","middle");    
-//    }
-//    //update the question temporal variable 
-//    questionTEM = data.value.question;    
-//    if(seq<301) seq++;
-//}
-////called when user click next
-//function updateNEXT(){
-//    $("#questionTitle").html("Q"+seq+" : "+'<mark>' + questionTEM[1].replace(/\s+/g,"") + '</mark>' + " is the children of " + '<mark>' + questionTEM[0] + '</mark>' +" ?");
-//
-//    //delete #1
-//    d3.select('#chart1').select("svg").remove();
-//    if(seq<seqTotal+1)//no movement in the end iteration
-//    {
-//        //move the #chart2 to left
-//        $("#chart2").fadeIn('slow',function(){
-//            $(this).animate({'left': '-=600px'},300,function(){
-//                    //#1 copy #2
-//                    document.getElementById("chart1").appendChild(
-//                        document.getElementById("chart2").querySelector("svg")
-//                    );
-//                    //move the #chart2back to right
-//                    $("#chart2").animate({
-//                        'left' : "0px" //moves right
-//                    });
-//            });
-//        });
-//    }
-//    //set progress bar
-//    var temSeq = seq-1;
-//    if(temSeq<seqTotal)
-//    {
-//        document.getElementById("slidesProgress").style.width= 100*temSeq/seqTotal+"%";
-//        $("#slidesProgress").html(Math.round(100*temSeq/seqTotal)+"%");  
-//    }    
-//    else if(temSeq==seqTotal)
-//    {
-//        document.getElementById("slidesProgress").style.width= 100+"%";
-//        $("#slidesProgress").html(100*temSeq/seqTotal+"%");  
-//        $("#slidesProgress").attr("class", "progress-bar progress-bar-danger progress-bar-striped");
-//        document.getElementById("restartBTN").style.visibility="visible";
-//        document.getElementById("answerYES").style.visibility="hidden";
-//        document.getElementById("answerNO").style.visibility="hidden";
-//        document.getElementById("next_question").style.visibility="hidden";
-//    }   
-//}
-
-// setup scrolling buttons
-$("#startBTN").click(function() {
-    if (seq > 0) return;
-    createNextQuestion();
-});
-
-$("#galleryBTN").click(function() {
-    $('html,body').animate({
-        scrollTop: $("#gallerySection").offset().top},
-        'slow');
-});
-$("#animationBTN").click(function() {
-    $('html,body').animate({
-        scrollTop: $("#animationSection").offset().top},
-        'slow');
-});
-$('#galleryBTNBack').click(function() {
-    $('html,body').animate({
-        scrollTop: $("#vizSection").offset().top},
-        'slow');
-});
-$('#animationBTNBack').click(function() {
-    $('html,body').animate({
-        scrollTop: $("#vizSection").offset().top},
-        'slow');
-});
-
-//// This script block handles all the Socket-IO communication
-//var handleServerRequest = function(data) {
-//    console.log({
-//        source: 'server',
-//        action: 'request',
-//        data: data
-//    });
-//    dataHistory.push(data.value);//store data in here
-//    if(seq==0)
-//        updateINIT(data);
-//    else
-//        updateANS(data);
-//};
-//
-//var socket = io.connect('http://localhost'); //, {port:81}
-//socket.on('server request', handleServerRequest);
-//// socket.on('update_after_answer', function(data){
-////     console.log('update_after_answer'+data.value);
-//// });
-//
-////tell the server to generate new tree, question and matrix based on the yes/no
-//function answerButtonClicked() {
-//    socket.emit(
-//        "answer_button_clicked",1);// [Yes,no] = [1,0]
-//    //set answer hidden //set next visible
-//    document.getElementById("answerYES").style.visibility="hidden";
-//    document.getElementById("answerNO").style.visibility="hidden";
-//    document.getElementById("next_question").style.visibility="visible";
-//}
-//function nextQuestionButtonClicked() {
-//    //change the layout from right to left//***
-//    //socket.emit(
-//    //    "next_question",1);
-//
-//    //set next hidden //set answer visible
-//    document.getElementById("answerYES").style.visibility="visible";
-//    document.getElementById("answerNO").style.visibility="visible";
-//    document.getElementById("next_question").style.visibility="hidden";
-//    updateNEXT();
-//
-//} 
-//function restartButtonClicked() {
-//    seq=0;
-//    document.getElementById("answerYES").style.visibility="visible";
-//    document.getElementById("answerNO").style.visibility="visible";
-//    document.getElementById("restartBTN").style.visibility="hidden";
-//    $("#slidesProgress").attr("class", "progress-bar progress-bar-striped active");
-//    document.getElementById("slidesProgress").style.width= 0+"%";
-//    $("#slidesProgress").html(0+"%");  
-//    d3.select('#chart1').select("svg").remove();
-//    d3.select('#chart2').select("svg").remove();
-//    socket.emit("restart",1);//send notification to server
-//    //clear dataHistory
-//    dataHistory = [];
-//    //clear the gallery
-//    for(var i=0;i<33;i++)
-//    {
-//        d3.select('#s'+i).selectAll("svg").remove();
-//    }
-//    for(var i=1;i<33;i++)
-//    {
-//        d3.select('#s'+i).html("slides"+i);
-//    }        
-//} 
-//document.getElementById("answerYES").addEventListener("click", answerButtonClicked);
-//document.getElementById("answerNO").addEventListener("click", answerButtonClicked); //right now call the same function***
-//document.getElementById("next_question").addEventListener("click", nextQuestionButtonClicked);
-//document.getElementById("restartBTN").addEventListener("click", restartButtonClicked);
-//document.getElementById("restartBTN").style.visibility="hidden";
-
-//function createSVG(stage, widthSVG, transSVG, callback){
-//            vis = d3.select(stage).append("svg:svg")
-//                .attr("width", widthSVG)
-//                .attr("height", widthSVG)
-//                .append("svg:g")
-//                .attr("transform", "translate("+transSVG+", "+transSVG+")"); 
-//            callback(vis);        
-//}
-//function render(vis,actual_JSON, stage){
-//            var treeData = actual_JSON.value.tree;
-//            var question = actual_JSON.value.question;
-//            var seqKeyword;
-//            
-//            // Create a cluster "canvas"
-//            var cluster = d3.layout.cluster()
-//            .size([300,150]);
-// 
-//            var diagonal = d3.svg.diagonal.radial()
-//            .projection(function(d) { return [d.y, d.x / 180 * Math.PI]; });
-//             
-//            var nodes = cluster.nodes(treeData);
-//            var links = cluster.links(nodes);
-// 
-//            var link = vis.selectAll("pathlink")
-//            .data(links)
-//            .enter().append("svg:path")
-//            .attr("class", "link")
-//            .attr("d", diagonal)
-// 
-//            var node = vis.selectAll("g.node")
-//                .data(nodes)
-//                .enter().append("svg:g")
-//                .attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
-// 
-//            // Add the dot at every node
-//            node.append("svg:circle")
-//                .attr("r", 3.5);
-// 
-//            node.append("svg:text")
-//                .attr("dx", function(d) { return d.x < 180 ? 8 : -8; })
-//                .attr("dy", ".31em")
-//                .attr("fill", 
-//                    function(d){//highlight the chosen node
-//                        if(stage == "#chart2")
-//                            seqKeyword = seq-1;
-//                        else
-//                            seqKeyword = seq;
-//                        if(d.name == question[0]||d.name == question[1].replace(/\s+/g,"")) return "red";
-//                        else    return "black";
-//                    })
-//                .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
-//                .attr("transform", function(d) { return d.x < 180 ? null : "rotate(180)"; })
-//                .text(function(d) { return d.name; });
-//            
-//        }    
-
-//function updateINIT(data){
-//        //set next invisible initially
-//        document.getElementById("next_question").style.visibility="hidden";
-//
-//        createSVG("#chart1", 560, 280, function(vis){   
-//            render(vis, data, "#chart1");  
-//        });
-//        //plot to the slide
-//        $('#s0').empty()
-//        createSVG("#s"+seq, 500, 250, function(vis){
-//            render(vis, data, "#s0");  
-//        });    
-//        //set question title
-//        $("#questionTitle").html("Q1 : "+'<mark>' + data.value.question[1].replace(/\s+/g,"") + '</mark>' + " is the children of " + '<mark>' + data.value.question[0] + '</mark>' +" ?");
-//        seq++;
-//}
-
