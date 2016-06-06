@@ -1,0 +1,38 @@
+shin,hips
+hips,shin
+head,shin
+ankle,head
+upper body,head
+upper body,head
+upper body,hips
+upper body,face
+upper body,calf
+head,face
+upper body,arm
+lower body,leg
+lower body,hips
+lower body,shin
+leg,shin
+lower body,calf
+leg,calf
+lower body,ankle
+leg,ankle
+shin,ankle
+ankle,calf
+ankle,calf
+shin,calf
+shin,ankle
+leg,ankle
+leg,ankle
+leg,ankle
+leg,ankle
+calf,ankle
+calf,ankle
+calf,ankle
+calf,ankle
+shin,calf
+shin,calf
+calf,ankle
+calf,ankle
+calf,ankle
+calf,ankle
