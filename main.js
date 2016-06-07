@@ -78,7 +78,6 @@ demoQueue.await(function(error, names_raw, weights_raw, root) {
         var targetIndex = nameIndex[link.target.name];
             sourceIndex = (link.source.name === 'body') ? 0 :
                                 nameIndex[link.source.name] + 1;
-        console.log(weights.length)
         link.strength = weights[targetIndex][sourceIndex];
     });
 
@@ -99,8 +98,8 @@ demoQueue.await(function(error, names_raw, weights_raw, root) {
         .attr("transform", d => "translate(" + d.y + "," + d.x + ")")
 
     node.append("rect")
-        .attr("width", d => 10 + d.name.length * 6)
-        .attr("x", d => -5 - d.name.length * 3)
+        .attr("width", d => 20 + d.name.length * 4)
+        .attr("x", d => -10 - d.name.length * 2)
         .attr("height", 20)
         .attr("y", -10);
 
@@ -136,10 +135,6 @@ demoQueue.await(function(error, names_raw, weights_raw, root) {
 
                 // Try to extract associated link
                 var link = highlightLinks.find(link => link.source.name === node.name);
-                if (link) {
-                    console.log(link);
-                    console.log(link.strength);
-                    console.log(highlightFill(link.strength));}
                 return link ? highlightFill(link.strength) : "#fff";
             });
 
@@ -418,8 +413,8 @@ function initChart(chart, seq, callback) {
         .on("mouseout", d => unHighlightNode(chart)); // TODO: hacky
 
     node.append("rect")
-        .attr("width", d => 10 + d.name.length * 6)
-        .attr("x", d => -5 - d.name.length * 3)
+        .attr("width", d => 20 + d.name.length * 4)
+        .attr("x", d => -10 - d.name.length * 2)
         .attr("height", 20)
         .attr("y", -10);
 
@@ -516,10 +511,6 @@ function highlightNode(chart, d) {
 
             // Try to extract associated link
             var link = highlightLinks.find(link => link.source.name === node.name);
-            if (link) {
-                console.log(link);
-                console.log(link.strength);
-                console.log(highlightFill(link.strength));}
             return link ? highlightFill(link.strength) : "#fff";
         });
 
