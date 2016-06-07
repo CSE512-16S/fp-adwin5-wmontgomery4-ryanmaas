@@ -172,7 +172,7 @@ demoQueue.await(function(error, names_raw, weights_raw, root) {
 var SVG_WIDTH = 550,
     SVG_HEIGHT = 500,
     SVG_OFFSET = 30,
-    DURATION = 1000,
+    DURATION = 750,
     NUM_BODYPART = 10,
     NUM_QUESTIONS = 38,
     WEIGHT_THRESHOLD = 0.5 / NUM_BODYPART,
