@@ -298,7 +298,7 @@ function createNextQuestion(){
     var parent = questions[seq][0],
         child = questions[seq][1];
     q.append("h3")
-        .html("Question " + (seq + 1) +  ") Is <b>'" + child + "'</b> part of <b>'" + parent + "'</b>?");
+        .html("Q" + (seq + 1) +  ") Is <b>'" + child + "'</b> part of <b>'" + parent + "'</b>?");
 
     var yesButton = q.append("button")
         .attr("class", "yes btn btn-success btn-default-md")
