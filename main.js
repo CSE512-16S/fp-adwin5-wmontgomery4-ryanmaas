@@ -14,6 +14,8 @@ function opacity(link) {
     return d3.interpolate(0.5, 1.0)(link.strength);
 }
 
+var highlightFill = d3.interpolateRgb("#ccf", "#88f");
+
 /**********
  ** DEMO **
  **********/
@@ -126,15 +128,19 @@ demoQueue.await(function(error, names_raw, weights_raw, root) {
             }
         }
 
-        console.log(highlightLinks)
-
         demo.selectAll("g.node rect")
             // TODO: make more efficient
             .style("fill", function(node) {
-                if (node.name === d.name) return "#ff9";
-                if (highlightLinks.find(link => link.source.name === node.name) ||
-                    node.name === d.parent.name) return "#99f";
-                else return "#fff";
+                // Draw gold child
+                if (node.name === d.name) return "#ff8";
+
+                // Try to extract associated link
+                var link = highlightLinks.find(link => link.source.name === node.name);
+                if (link) {
+                    console.log(link);
+                    console.log(link.strength);
+                    console.log(highlightFill(link.strength));}
+                return link ? highlightFill(link.strength) : "#fff";
             });
 
         demo.selectAll("path.link")
@@ -505,10 +511,16 @@ function highlightNode(chart, d) {
     svg.selectAll("g.node rect")
         // TODO: make more efficient
         .style("fill", function(node) {
-            if (node.name === d.name) return "#ff9";
-            if (highlightLinks.find(link => link.source.name === node.name) ||
-                node.name === d.parent.name) return "#99f";
-            else return "#fff";
+            // Draw gold child
+            if (node.name === d.name) return "#ff8";
+
+            // Try to extract associated link
+            var link = highlightLinks.find(link => link.source.name === node.name);
+            if (link) {
+                console.log(link);
+                console.log(link.strength);
+                console.log(highlightFill(link.strength));}
+            return link ? highlightFill(link.strength) : "#fff";
         });
 
     svg.selectAll("path.link")
@@ -533,8 +545,8 @@ function unHighlightNode(chart) {
 
     chart.selectAll("g.node rect")
         .style("fill", function(node) {
-            if (node.name === chart.qChild) return "#ff9";
-            if (node.name === chart.qParent) return "#99f";
+            if (node.name === chart.qChild) return "#ff8";
+            if (node.name === chart.qParent) return "#88f";
             else return "#fff";
         });
 }
