@@ -1,6 +1,6 @@
 // Constants
-var SVG_WIDTH = 560,
-    SVG_HEIGHT = 560,
+var SVG_WIDTH = 550,
+    SVG_HEIGHT = 500,
     SVG_OFFSET = 30,
     DURATION = 1000,
     NUM_BODYPART = 10,
@@ -122,15 +122,15 @@ function createNextQuestion(){
         .text("Question " + (seq + 1) +  ") Is '" + child + "' part of '" + parent + "'?");
 
     var yesButton = q.append("button")
-        .attr("class", "yes btn btn-default btn-default-md")
+        .attr("class", "yes btn btn-success btn-default-md")
         .text("Yes")
 
     var noButton = q.append("button")
-        .attr("class", "no btn btn-default btn-default-md")
+        .attr("class", "no btn btn-danger btn-default-md")
         .text("No")
 
     var nextButton = q.append("button")
-        .attr("class", "next btn btn-default btn-default-md pull-right")
+        .attr("class", "next btn btn-default btn-default-md")
         .text("Next")
         .style("visibility", "hidden")
 
@@ -160,10 +160,20 @@ function createNextQuestion(){
             updateChart(chart, function() {
                 var prevChart = row.insert("div", ":first-child")
                     .attr("class", "block chart");
+
+                // Hacky setup before init
                 prevChart.seq = chart.seq - 1;
                 prevChart.qChild = child;
                 prevChart.qParent = parent;
                 initChart(prevChart, unHighlightNode)
+
+                // Nice transition
+                var svg = prevChart.select("svg");
+                svg.attr("width", 0);
+                svg.transition()
+                    .duration(DURATION)
+                    .attr("width", SVG_WIDTH);
+
             });
             nextButton.style("visibility", "visible");
         })
@@ -222,6 +232,14 @@ function initChart(chart, callback) {
         .attr("height", SVG_HEIGHT)
       .append("g")
         .attr("transform", "translate(" + SVG_OFFSET + ",0)");
+
+    // Show that this is before question
+    var label = svg.append("text")
+        .attr("class", "beforeAfter")
+        .attr("font-size", 24)
+        .attr("x", 10 - SVG_OFFSET)
+        .attr("y", 30)
+        .text("Before")
 
     // Set up svg elements
     var link = svg.selectAll("path.link")
@@ -296,7 +314,11 @@ function updateChart(chart, callback) {
         .duration(DURATION)
         .attr("transform", d => "translate(" + d.y + "," + d.x + ")");
 
-    if (callback) callback(chart);
+    var label = chart.select(".beforeAfter")
+        .transition()
+        .duration(DURATION)
+        .text("After")
+        .each("end", callback)
 }
 
 function highlightNode(chart, d) {

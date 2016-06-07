@@ -81,8 +81,8 @@ svg {
 }
 
 .block {
-  width: 560px; padding: 10px;
-  position:relative;
+  padding: 10px;
+  position: relative;
   display: inline-block; /* display inline with abality to provide width/height */
 }
 
