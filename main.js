@@ -7,18 +7,18 @@ function stroke(link) {
 }
 
 function strokeWidth(link) {
-    return d3.interpolate(1.5, 4.0)(link.strength);
+    return d3.interpolate(1.5, 3.0)(link.strength);
 }
 
 function opacity(link) {
-    return Math.max(0.25, link.strength);
+    return d3.interpolate(0.5, 1.0)(link.strength);
 }
 
 /**********
  ** DEMO **
  **********/
 var DEMO_SVG_WIDTH = 1000,
-    DEMO_SVG_HEIGHT = 500,
+    DEMO_SVG_HEIGHT = 600,
     DEMO_SVG_OFFSET = 30,
     DEMO_NUM_BODYPART = 44,
     DEMO_WEIGHT_THRESHOLD = 0.5 / DEMO_NUM_BODYPART,
