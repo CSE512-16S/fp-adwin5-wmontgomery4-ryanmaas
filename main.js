@@ -19,35 +19,68 @@ var highlightFill = d3.interpolateRgb("#ccf", "#88f");
 /**********
  ** DEMO **
  **********/
-var DEMO_SVG_WIDTH = 1000,
-    DEMO_SVG_HEIGHT = 600,
+var DEMO_SEQ = 300,
+    DEMO_SVG_WIDTH = 1100,
+    DEMO_SVG_HEIGHT = 450,
     DEMO_SVG_OFFSET = 30,
     DEMO_NUM_BODYPART = 44,
     DEMO_WEIGHT_THRESHOLD = 0.5 / DEMO_NUM_BODYPART,
     DEMO_DATA_DIR = 'bodypart_' + DEMO_NUM_BODYPART;
 
-var demo = d3.select("#timeline").append("svg")
-    .attr("width", DEMO_SVG_WIDTH)
-    .attr("height", DEMO_SVG_HEIGHT)
-  .append("g")
-    .attr("transform", "translate(" + DEMO_SVG_OFFSET + ",0)");
-
 var demoLayout = d3.layout.tree()
     .size([DEMO_SVG_HEIGHT, DEMO_SVG_WIDTH-2.5*DEMO_SVG_OFFSET]);
 
 // Load stuff and get ready
-var demo_seq = 300;
-var names_txt = DEMO_DATA_DIR + '/list_of_words_bodypart.txt';
-var weights_txt = DEMO_DATA_DIR + '/edge_prob_bodypart.txt';
-var demo_padded = ('0000' + demo_seq).slice(-4) + '.json';
+var demo_names_txt = DEMO_DATA_DIR + '/list_of_words_bodypart.txt';
+var demo_weights_txt = DEMO_DATA_DIR + '/edge_prob_bodypart.txt';
+var demo_padded = ('0000' + DEMO_SEQ).slice(-4) + '.json';
 var demo_json = DEMO_DATA_DIR + '/body_part_json/' + demo_padded;
 
-var demoQueue = queue()
-    .defer(d3.text, names_txt)
-    .defer(d3.text, weights_txt)
-    .defer(d3.json, demo_json);
+// Magic global
+var demo;
+d3.select("#demoBTN").on("click", function() {
+    this.remove();
 
-demoQueue.await(function(error, names_raw, weights_raw, root) {
+    // Setup header, with button to move forward
+    var header = d3.select("#timeline").append("div")
+        .attr("class", "row log well col-md-12")
+        .attr("id", "demoHeader");
+
+    var instructions = header.append("h3").text("Demo Instructions");
+
+    var list = header.append("ul")
+    list.append("li").text("Below is the MAP hierarchy learned after crowdsourcing 300 questions.")
+    list.append("li").text("Weaker edges appear thinner/redder/more transparent.")
+    list.append("li").text("Hover over a node to activate edge highlighting, show other possible parent nodes")
+
+    // Add button for getting to interactive part
+    header.append("button")
+        .attr("class", "btn btn-primary btn-md pull-right")
+        .text("Go To Interactive Session")
+        .on("click", function() {
+            this.remove();
+            createNextQuestion();
+        });
+
+    // Scroll to header
+    $('html,body').animate({scrollTop: $("#demoHeader").offset().top}, 'slow');
+
+    demo = d3.select("#timeline").append("div")
+        .attr("class", "block chart")
+      .append("svg")
+        .attr("width", DEMO_SVG_WIDTH)
+        .attr("height", DEMO_SVG_HEIGHT)
+      .append("g")
+        .attr("transform", "translate(" + DEMO_SVG_OFFSET + ",0)");
+
+    var demoQueue = queue()
+        .defer(d3.text, demo_names_txt)
+        .defer(d3.text, demo_weights_txt)
+        .defer(d3.json, demo_json)
+        .await(initDemo);
+});
+
+function initDemo(error, names_raw, weights_raw, root) {
     if (error) throw error;
 
     // setup nameIndex
@@ -57,7 +90,7 @@ demoQueue.await(function(error, names_raw, weights_raw, root) {
     names.forEach( (name, i) => nameIndex[name] = i );
 
     // Parse magic
-    weights_raw = weights_raw.split("\n")[demo_seq].split(",");
+    weights_raw = weights_raw.split("\n")[DEMO_SEQ].split(",");
     var weights = [];
     for (var i = 0; i < DEMO_NUM_BODYPART; i++) {
         var withEntity = DEMO_NUM_BODYPART + 1;
@@ -162,7 +195,7 @@ demoQueue.await(function(error, names_raw, weights_raw, root) {
         demo.selectAll("g.node rect")
             .style("fill", "#fff");
     });
-})
+}
 
 /**********
  ** MAIN **
@@ -170,7 +203,7 @@ demoQueue.await(function(error, names_raw, weights_raw, root) {
 
 // Constants
 var SVG_WIDTH = 550,
-    SVG_HEIGHT = 500,
+    SVG_HEIGHT = 510,
     SVG_OFFSET = 30,
     DURATION = 750,
     NUM_BODYPART = 10,
@@ -254,12 +287,6 @@ mainQueue.await(function(error, names_raw, weights_raw, questions_raw) {
 /*****************
  ** INTERACTION **
  *****************/
-// setup scrolling buttons
-$("#startBTN").click(function() {
-    if (seq > 0) return;
-    createNextQuestion();
-});
-
 function createNextQuestion(){
     // Append SVG objects for next question and tree
 
@@ -271,7 +298,7 @@ function createNextQuestion(){
     var parent = questions[seq][0],
         child = questions[seq][1];
     q.append("h3")
-        .text("Question " + (seq + 1) +  ") Is '" + child + "' part of '" + parent + "'?");
+        .html("Question " + (seq + 1) +  ") Is <b>'" + child + "'</b> part of <b>'" + parent + "'</b>?");
 
     var yesButton = q.append("button")
         .attr("class", "yes btn btn-success btn-default-md")
@@ -282,8 +309,8 @@ function createNextQuestion(){
         .text("No")
 
     var nextButton = q.append("button")
-        .attr("class", "next btn btn-default btn-default-md")
-        .text("Next")
+        .attr("class", "next btn btn-default btn-default-md pull-right")
+        .text("Next Question")
         .style("visibility", "hidden")
 
     // Scroll to new question
@@ -320,10 +347,12 @@ function createNextQuestion(){
             svg.attr("width", 0);
             svg.transition()
                 .duration(DURATION)
-                .attr("width", SVG_WIDTH);
-
+                .attr("width", SVG_WIDTH)
+                .each("end", function () {
+                    // Don't display next button until the end
+                    nextButton.style("visibility", "visible");
+                });
         });
-        nextButton.style("visibility", "visible");
     }
 
     var yesNoClicked = false;
