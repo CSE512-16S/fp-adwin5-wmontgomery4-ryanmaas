@@ -27,11 +27,15 @@ var diagonal = d3.svg.diagonal()
 
 // Interpolate stroke/strokeWidth based on weight strength
 function stroke(link) {
-    return d3.interpolateRgb("#f33", "#000")(link.strength);
+    return d3.interpolateRgb("#f00", "#000")(link.strength);
 }
 
 function strokeWidth(link) {
-    return d3.interpolate(0.5, 4.0)(link.strength);
+    return d3.interpolate(1.5, 4.0)(link.strength);
+}
+
+function opacity(link) {
+    return Math.max(0.25, link.strength);
 }
 
 // Sorting function to keep everything sane
@@ -226,7 +230,8 @@ function initChart(chart, callback) {
         .attr("class", "link")
         .attr("d", diagonal)
         .attr("stroke", stroke)
-        .attr("stroke-width", strokeWidth);
+        .attr("stroke-width", strokeWidth)
+        .attr("opacity", opacity);
 
     var node = svg.selectAll("g.node")
         .data(nodes)
@@ -282,7 +287,8 @@ function updateChart(chart, callback) {
         .duration(DURATION)
         .attr("d", diagonal)
         .style("stroke", stroke)
-        .style("stroke-width", strokeWidth);
+        .style("stroke-width", strokeWidth)
+        .attr("opacity", opacity);
 
     var node = chart.selectAll("g.node")
         .data(nodes)
@@ -333,7 +339,8 @@ function highlightNode(chart, d) {
         .attr("class", "link highlight")
         .attr("d", diagonal)
         .attr("stroke", stroke)
-        .attr("stroke-width", strokeWidth);
+        .attr("stroke-width", strokeWidth)
+        .attr("opacity", opacity);
 }
 
 function unHighlightNode(chart) {
@@ -341,7 +348,6 @@ function unHighlightNode(chart) {
         .remove();
 
     chart.selectAll("path.link")
-        .attr("stroke-width", strokeWidth)
         .style("visibility", "visible");
 
     chart.selectAll("g.node rect")
