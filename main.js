@@ -11,7 +11,7 @@ function strokeWidth(link) {
 }
 
 function opacity(link) {
-    return d3.interpolate(0.5, 1.0)(link.strength);
+    return d3.interpolate(0.3, 1.0)(link.strength);
 }
 
 var highlightFill = d3.interpolateRgb("#ccf", "#88f");
@@ -82,6 +82,50 @@ d3.select("#demoBTN").on("click", function() {
 
 function initDemo(error, names_raw, weights_raw, root) {
     if (error) throw error;
+
+    // Legend
+    // TODO: abstract into function
+    var gradient = demo.append("svg:defs")
+      .append("svg:linearGradient")
+        .attr("id", "gradient")
+        .attr("x1", "0%")
+        .attr("y1", "0%")
+        .attr("x2", "100%")
+        .attr("y2", "0%")
+        .attr("spreadMethod", "pad");
+    gradient.append("svg:stop")
+        .attr("offset", "0%")
+        .attr("stop-color", "#f00")
+        .attr("stop-opacity", 0.3);
+    gradient.append("svg:stop")
+        .attr("offset", "100%")
+        .attr("stop-color", "#000")
+        .attr("stop-opacity", 1.0);
+    demo.append("svg:polygon")
+        .attr("points", "0,400 0,401.5 200,402.25 200,399.25")
+        .style("fill", "url(#gradient)");
+    demo.append("text")
+        .attr("x", 0)
+        .attr("y", 390)
+        .attr("font-size", 10)
+        .text("Edge Probability")
+    demo.append("text")
+        .attr("x", 0)
+        .attr("y", 415)
+        .attr("font-size", 10)
+        .text("0%")
+    demo.append("text")
+        .attr("x", 100)
+        .attr("y", 415)
+        .attr("font-size", 10)
+        .attr("text-anchor", "middle")
+        .text("50%")
+    demo.append("text")
+        .attr("x", 200)
+        .attr("y", 415)
+        .attr("font-size", 10)
+        .attr("text-anchor", "end")
+        .text("100%")
 
     // setup nameIndex
     var names = names_raw.split("\n");
@@ -391,6 +435,57 @@ function initChart(chart, seq, callback) {
         return;
     }
 
+    // Create the chart
+    var svg = chart.append("svg")
+        .attr("width", SVG_WIDTH)
+        .attr("height", SVG_HEIGHT)
+      .append("g")
+        .attr("transform", "translate(" + SVG_OFFSET + ",0)");
+
+    // Legend
+    var gradient = svg.append("svg:defs")
+      .append("svg:linearGradient")
+        .attr("id", "gradient")
+        .attr("x1", "0%")
+        .attr("y1", "0%")
+        .attr("x2", "0%")
+        .attr("y2", "100%")
+        .attr("spreadMethod", "pad");
+    gradient.append("svg:stop")
+        .attr("offset", "0%")
+        .attr("stop-color", "#000")
+        .attr("stop-opacity", 1.0);
+    gradient.append("svg:stop")
+        .attr("offset", "100%")
+        .attr("stop-color", "#f00")
+        .attr("stop-opacity", 0.3);
+
+    svg.append("svg:polygon")
+        .attr("points", "-10,300 -7,300 -5.25,500 -6.75,500")
+        .style("fill", "url(#gradient)");
+//    svg.append("text")
+//        .attr("x", 200)
+//        .attr("y", 200)
+//        .attr("font-size", 10)
+//        .attr("transform", "rotate(90)")
+//        .attr("text-anchor", "middle")
+//        .text("Edge Probability")
+    svg.append("text")
+        .attr("x", -2)
+        .attr("y", 310)
+        .attr("font-size", 10)
+        .text("100%")
+    svg.append("text")
+        .attr("x", -2)
+        .attr("y", 405)
+        .attr("font-size", 10)
+        .text("50%")
+    svg.append("text")
+        .attr("x", -2)
+        .attr("y", 500)
+        .attr("font-size", 10)
+        .text("0%")
+
     // NOTE: keep nodes sorted for transitioning properly
     var root = trees[chart.seq]
     var nodes = layout.nodes(root).sort((a,b) => sortNames(a.name, b.name));
@@ -407,13 +502,6 @@ function initChart(chart, seq, callback) {
     // Store stuff
     chart.nodes = nodes;
     chart.links = links;
-
-    // Create the chart
-    var svg = chart.append("svg")
-        .attr("width", SVG_WIDTH)
-        .attr("height", SVG_HEIGHT)
-      .append("g")
-        .attr("transform", "translate(" + SVG_OFFSET + ",0)");
 
     // Show that this is before question
     var label = svg.append("text")
