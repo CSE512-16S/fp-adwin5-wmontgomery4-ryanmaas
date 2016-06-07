@@ -104,10 +104,7 @@ queue.await(function(error, names_raw, weights_raw, questions_raw) {
 // setup scrolling buttons
 $("#startBTN").click(function() {
     if (seq > 0) return;
-    d3.json(jsonFile(seq), function(root) {
-        trees.push(root);
-        createNextQuestion();
-    });
+    createNextQuestion();
 });
 
 function createNextQuestion(){
@@ -147,38 +144,33 @@ function createNextQuestion(){
     var chart = row.append("div")
         .attr("class", "block chart")
 
-    chart.seq = seq;
+    // TODO: hack
     chart.qChild = child;
     chart.qParent = parent;
 
-    initChart(chart, unHighlightNode); // TODO: hack
+    initChart(chart, seq, unHighlightNode); // TODO: hack
 
     // Set up the buttons
     function update() {
         seq++;
-        d3.json(jsonFile(seq), function(error, root) {
-            if (error) throw error;
-            trees.push(root);
-            updateChart(chart, function() {
-                var prevChart = row.insert("div", ":first-child")
-                    .attr("class", "block chart");
+        updateChart(chart, function() {
+            var prevChart = row.insert("div", ":first-child")
+                .attr("class", "block chart");
 
-                // Hacky setup before init
-                prevChart.seq = chart.seq - 1;
-                prevChart.qChild = child;
-                prevChart.qParent = parent;
-                initChart(prevChart, unHighlightNode)
+            // Hacky setup before init
+            prevChart.qChild = child;
+            prevChart.qParent = parent;
+            initChart(prevChart, chart.seq - 1, unHighlightNode)
 
-                // Nice transition
-                var svg = prevChart.select("svg");
-                svg.attr("width", 0);
-                svg.transition()
-                    .duration(DURATION)
-                    .attr("width", SVG_WIDTH);
+            // Nice transition
+            var svg = prevChart.select("svg");
+            svg.attr("width", 0);
+            svg.transition()
+                .duration(DURATION)
+                .attr("width", SVG_WIDTH);
 
-            });
-            nextButton.style("visibility", "visible");
-        })
+        });
+        nextButton.style("visibility", "visible");
     }
 
     var yesNoClicked = false;
@@ -197,35 +189,37 @@ function createNextQuestion(){
     var nextClicked = false;
     nextButton.on("click", function() {
         if (!yesNoClicked) return;
-        if (nextClicked++) return; // set clicked true, nifty
+        if (nextClicked++) return;
         nextButton.style("visibility", "hidden");
         createNextQuestion();
     });
 }
 
-function initChart(chart, callback) {
-    var seq = chart.seq;
+function initChart(chart, seq, callback) {
+    // TODO: super hacky, but it works well enough
+    chart.seq = seq;
 
-    if (trees.length <= seq) {
-        throw "TODO: preload, etc.";
+    // TODO: hack, assumes only need to import next tree
+    if (trees.length <= chart.seq) {
+        d3.json(jsonFile(chart.seq), function(error, root) {
+            if (error) throw error;
+            trees.push(root);
+            initChart(chart, seq, callback);
+        });
+        return;
     }
 
     // NOTE: keep nodes sorted for transitioning properly
-    var root = trees[seq]
+    var root = trees[chart.seq]
     var nodes = layout.nodes(root).sort((a,b) => sortNames(a.name, b.name));
     var links = layout.links(nodes).sort((a,b) => sortNames(a.target.name, b.target.name));
-
-    // Store stuff for easier access
-    chart.seq = seq;
-    chart.nodes = nodes;
-    chart.links = links;
 
     // Store edge strength
     links.forEach(function(link) {
         var targetIndex = nameIndex[link.target.name];
             sourceIndex = (link.source.name === 'body') ? 0 :
                                 nameIndex[link.source.name] + 1;
-        link.strength = weightMatrix[seq][targetIndex][sourceIndex];
+        link.strength = weightMatrix[chart.seq][targetIndex][sourceIndex];
     });
 
     // Create the chart
@@ -276,20 +270,21 @@ function initChart(chart, callback) {
 }
 
 function updateChart(chart, callback) {
-    chart.seq++;
-
-    if (trees.length <= chart.seq) {
-        throw "TODO: preload, etc.";
+    // update to current thing
+    // TODO: hack, assumes only need to import next tree
+    if (trees.length <= chart.seq+1) {
+        d3.json(jsonFile(chart.seq+1), function(root) {
+            trees.push(root);
+            updateChart(chart, callback);
+        });
+        return;
     }
+    chart.seq++;
 
     // NOTE: keep nodes sorted for transitioning properly
     var root = trees[chart.seq]
     var nodes = layout.nodes(root).sort((a,b) => sortNames(a.name, b.name));
     var links = layout.links(nodes).sort((a,b) => sortNames(a.target.name, b.target.name));
-
-    // Store stuff for easier access
-    chart.nodes = nodes;
-    chart.links = links;
 
     // Store edge strength
     // TODO: Store hiddenlinks
