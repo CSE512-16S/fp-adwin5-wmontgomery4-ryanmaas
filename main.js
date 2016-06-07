@@ -3,13 +3,13 @@ var SVG_WIDTH = 550,
     SVG_HEIGHT = 500,
     SVG_OFFSET = 30,
     DURATION = 1000,
-//  NUM_BODYPART = 10,
-//  NUM_QUESTIONS = 38,
+    NUM_BODYPART = 10,
+    NUM_QUESTIONS = 38,
 //    NUM_BODYPART = 24,
 //    NUM_QUESTIONS = 132,
-    NUM_BODYPART = 44,
-    NUM_QUESTIONS = 302,
-    WEIGHT_THRESHOLD = 5e-2,
+//    NUM_BODYPART = 44,
+//    NUM_QUESTIONS = 302,
+    WEIGHT_THRESHOLD = 0.5 / NUM_BODYPART,
     DATA_DIR = 'bodypart_' + NUM_BODYPART;
 
 // Globals we'll manipulate
@@ -222,6 +222,10 @@ function initChart(chart, seq, callback) {
         link.strength = weightMatrix[chart.seq][targetIndex][sourceIndex];
     });
 
+    // Store stuff
+    chart.nodes = nodes;
+    chart.links = links;
+
     // Create the chart
     var svg = chart.append("svg")
         .attr("width", SVG_WIDTH)
@@ -285,6 +289,10 @@ function updateChart(chart, callback) {
     var root = trees[chart.seq]
     var nodes = layout.nodes(root).sort((a,b) => sortNames(a.name, b.name));
     var links = layout.links(nodes).sort((a,b) => sortNames(a.target.name, b.target.name));
+
+    // Store stuff
+    chart.nodes = nodes;
+    chart.links = links;
 
     // Store edge strength
     // TODO: Store hiddenlinks
