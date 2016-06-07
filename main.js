@@ -27,7 +27,7 @@ var diagonal = d3.svg.diagonal()
 
 // Interpolate stroke/strokeWidth based on weight strength
 function stroke(link) {
-    return d3.interpolateRgb("#f00", "#000")(link.strength);
+    return d3.interpolateRgb("#f33", "#000")(link.strength);
 }
 
 function strokeWidth(link) {
