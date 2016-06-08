@@ -36,6 +36,3 @@ Go to `http://localhost:8000` on your machine
 
 ## breakdown
 
-## Data Sources
-
-## Future work
