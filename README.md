@@ -34,8 +34,6 @@ Go to `http://localhost:8000` on your machine
 [Poster](https://github.com/CSE512-16S/fp-adwin5-wmontgomery4-ryanmaas/raw/master/final/poster-adwin555-wmonty-massr.pdf),
 [Final Paper](https://github.com/CSE512-16S/fp-adwin5-wmontgomery4-ryanmaas/raw/master/final/paper-adwin555-wmonty-massr.pdf)
 
-## Development Process
-
 ## breakdown
 
 ## Data Sources
