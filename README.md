@@ -4,8 +4,8 @@ Interactive Learning for Hierarchy of Concepts
 
 ## Team Members
 1. Adin Jahn (adwin5)
-2. Ryan Mass ()
-3. Harley Montgomery ()
+2. Ryan Mass (ryanmaas)
+3. Harley Montgomery (wmontgomery4)
 
 ## Instructions
 Run 
