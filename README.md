@@ -23,7 +23,7 @@ This is brief introduction of our visualization system.
 2. Ryan Mass (ryanmaas)
 3. Harley Montgomery (wmontgomery4)
 
-## Instructions
+## Running Instructions
 Run 
 `python -m SimpleHTTPServer 8000`
 
