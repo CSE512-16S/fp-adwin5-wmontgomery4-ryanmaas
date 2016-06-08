@@ -35,4 +35,9 @@ Go to `http://localhost:8000` on your machine
 [Final Paper](https://github.com/CSE512-16S/fp-adwin5-wmontgomery4-ryanmaas/raw/master/final/paper-adwin555-wmonty-massr.pdf)
 
 ## breakdown
+- All : overall architecture design, project goal setup, searching well-suited visualization method
+- Adwin : nodeJS Backend setup, socketIO setup, frontend initial bootstrap setup 
+- Ryan : Related Paper Research, debugging, layout design   
+- Harley : Frontend design, hidden edge visualization, node animation transition, color encoding
+
 
