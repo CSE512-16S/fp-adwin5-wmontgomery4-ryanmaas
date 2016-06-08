@@ -28,7 +28,7 @@ Run
 
 Go to `http://localhost:8000` on your machine
 
-## Project
+## Project Link
 
 [Proposal](https://github.com/CSE512-16S/fp-adwin5-wmontgomery4-ryanmaas/blob/master/resource/proposal-adwin555-wmonty-massr.pdf), 
 [Poster](https://github.com/CSE512-16S/fp-adwin5-wmontgomery4-ryanmaas/raw/master/final/poster-adwin555-wmonty-massr.pdf),
