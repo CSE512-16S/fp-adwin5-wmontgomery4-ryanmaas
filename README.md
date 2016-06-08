@@ -37,7 +37,7 @@ Go to `http://localhost:8000` on your machine
 ## breakdown
 - All : overall architecture design, project goal setup, searching well-suited visualization method
 - Adwin : nodeJS Backend setup, socketIO setup, frontend initial bootstrap setup 
-- Ryan : Related Paper Research, debugging, layout design   
+- Ryan : Literature review, debugging, layout design   
 - Harley : Frontend design, hidden edge visualization, node animation transition, color encoding
 
 
