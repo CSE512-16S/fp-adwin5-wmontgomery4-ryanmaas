@@ -15,8 +15,7 @@ This is brief introduction of our visualization system.
   <li>Interactive Interface to ask, collect and render the tree based on the user's answer. Then throws out the most informative question for next iteration.</li>
 </ol>
 
-
-![abstract picture](https://github.com/CSE512-16S/fp-adwin5-wmontgomery4-ryanmaas/blob/master/resource/abstract-picture.png)
+![abstract picture](https://github.com/CSE512-16S/fp-adwin5-wmontgomery4-ryanmaas/blob/master/resource/summary.png)
 
 ## Team Members
 1. Adwin Jahn (adwin5)
