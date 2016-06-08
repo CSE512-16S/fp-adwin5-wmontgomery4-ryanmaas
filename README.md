@@ -15,7 +15,7 @@ Go to `http://localhost:8000` on your machine
 
 ## Project
 
-[Poster](https://github.com/CSE512-16S/),
+[Poster](https://github.com/CSE512-16S/fp-adwin5-wmontgomery4-ryanmaas/raw/master/final/poster-adwin555-wmonty-massr.pdf),
 [Final Paper](https://github.com/CSE512-16S/)
 
 ## Development Process
