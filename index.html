@@ -21,43 +21,26 @@
 
     <div class='pub' data-spy="scroll" data-target=".navbar">
 
-      <h1 class="title">Improve the Crowdsourcing</h1>
+      <h1 class="title">Team Members</h1>
       <div class="authors">
         <a href="https://github.com/adwin5">Adwin Jahn</a>,
         <a href="https://github.com/ryanmaas">Ryan Mass</a>,
         <a href="https://github.com/wmontgomery4">Harley Montgomery</a>
       </div>
-      <p>
-        Acknowledgement: Our work focus on the visualization system. The part of dataset and machine learning algorithm is provided by PHD student Yuyin Sun and Dr. Dieter Fox in the Department of Computer Science &amp; Engineering at the University of Washington.
-      </p>
-
-      <h2>Goal</h2>
-      <p>We aim to buid a visualization system for a crowdsourcing algorithm which learns hierarchies of concepts. Our focus are:</p>
-      <ol>
-      <li><span class="label">Besides MAP tree, find the best way to visualize the hidden edge and possible parent for each node.</span></li>
-      <li><span class="label">Animate the transition before and after the user select the answer. Good animzation helps the user to track the change.</span></li>
-      <li><span class="label">Observe if the visualization tool will improve accuracy rate and speed up the process on crowdsourcing.</span></li>
-      </ol>
-
-
-      <h2>Abstract</h2>
-      <p>We present a visualization system for an algorithm which learns hierarchies of concepts by crowdsourcing answers to binary questions about the relationships between objects. A hierarchy is represented as a tree, where a node is considered a subtype of its ancestors. The algorithm learns a distribution over all possible hierarchies, but only returns the (MAP) hierarchy, which may not be representative of the entire distribution. Previous visualizations also do a poor job of showing how relationships change in response to crowdsourced answers. Our tool tackles the first issue by prominently encoding the uncertainty of the edges in the tree and by allowing to user to hover over a node to see other possible parent nodes, a process we call ``edge highlighting''. The second issue is address with an interactive session which walks the user through the process of the algorithm, highlighting the changes between relationships that occur after a question has been answered.</p>
-      <p>We focus on three improvement.</p>
-      <ol type="A" >
-        <li><span class="label">Color encoding for the strength of edge between parent and their children.</span></li>
-        <li><span class="label">Visualize the hidden edges and possible parent when cursor hovers over the node.</span></li>
-        <li><span class="label">Interactive Interface to ask, collect and render the tree based on the user's answer. Then throws out the most informative question for next iteration.</span></li>
-      </ol>
+      <p>Acknowledgement: Our work focuses on the crowdsourcing algorithm system designed by Yuyin Sun and Dieter Fox in the Department of Computer Science &amp; Engineering at the University of Washington. All datasets were provided by our collaborators</p>
 
       <div class="figure">
         <img src="summary.png" width="100%"/>
-        <div class="caption">A) MAP hierarchy of conecept with edge strength encoding B) Visualize the hidden edge and possible parents C) Interactive Interface</div>
+        <div class="caption"> A) An example of a hierarchy visualized with our tool after training on crowdsourced answers. Uncertain edges, such as 'knee-shin' can be immediately detected. B) "Edge highlighting" demonstration, showing the other 'parent-child' edges which are above the threshold. C) The interactive session shows the user how their answer affected the hierarchy.
       </div>
 
       <h2>Software</h2>
       <p>
         Try Interactive Learning for Hierarchy of Concepts online <a href="http://idl.cs.washington.edu/projects/lyra/app/">here</a>.
       </p>
+
+      <h2>Abstract</h2>
+      <p>We present a visualization system for an algorithm which learns hierarchies of concepts by crowdsourcing answers to binary questions about the relationships between objects. A hierarchy is represented as a tree, where a node is considered a subtype of its ancestors. The algorithm learns a distribution over all possible hierarchies, but only returns the (MAP) hierarchy, which may not be representative of the entire distribution. Previous visualizations also do a poor job of showing how relationships change in response to crowdsourced answers. Our tool tackles the first issue by prominently encoding the uncertainty of the edges in the tree and by allowing to user to hover over a node to see other possible parent nodes, a process we call ``edge highlighting''. The second issue is address with an interactive session which walks the user through the process of the algorithm, highlighting the changes between relationships that occur after a question has been answered.</p>
 
       <h2>Materials</h2>
       <div class="links">
