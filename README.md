@@ -14,10 +14,10 @@ Run
 
 Go to `http://localhost:8000` on your machine
 
-## Project Link
+## Project Links
 
-[Poster](https://github.com/CSE512-16S/fp-adwin5-wmontgomery4-ryanmaas/raw/master/final/poster-adwin555-wmonty-massr.pdf),
-[Final Paper](https://github.com/CSE512-16S/fp-adwin5-wmontgomery4-ryanmaas/raw/master/final/paper-adwin555-wmonty-massr.pdf)
+[Poster](https://github.com/CSE512-16S/fp-adwin5-wmontgomery4-ryanmaas/raw/gh-pages/final/poster-adwin555-wmonty-massr.pdf),
+[Final Paper](https://github.com/CSE512-16S/fp-adwin5-wmontgomery4-ryanmaas/raw/gh-pages/final/paper-adwin555-wmonty-massr.pdf)
 [Code](https://github.com/CSE512-16S/fp-adwin5-wmontgomery4-ryanmaas)
 
 ## Breakdown
