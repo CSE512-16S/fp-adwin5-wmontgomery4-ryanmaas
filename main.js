@@ -353,7 +353,7 @@ function createNextQuestion(){
         .text("No")
 
     var nextButton = q.append("button")
-        .attr("class", "next btn btn-default btn-default-md pull-right")
+        .attr("class", "next btn btn-primary btn-primary-md pull-right")
         .text("Next Question")
         .style("visibility", "hidden")
 
