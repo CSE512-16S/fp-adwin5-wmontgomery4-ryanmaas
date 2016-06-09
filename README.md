@@ -3,7 +3,7 @@ Interactive Learning for Hierarchy of Concepts
 ## Goal
 We aim to buid a visualization system for a crowdsourcing algorithm which learns hierarchies of concepts. Our focus are:
 
-1. Besides MAP tree, find the best way to visualize the hidden edge and possible parent for each node. 
+1. Besides the MAP tree, find the best way to visualize the hidden edge and possible parent for each node. 
 2. Animate the transition before and after the user select the answer. Good animzation helps the user to track the change.
 3. Observe if the visualization tool will improve accuracy rate and speed up the process on crowdsourcing.
 
