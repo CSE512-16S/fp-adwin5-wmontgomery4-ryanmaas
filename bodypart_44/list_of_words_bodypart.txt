@@ -1,0 +1,44 @@
+ankle
+arm
+back
+belly
+calf
+cheek
+chest
+chin
+collar bone
+ear
+elbow
+eye
+eyebrow
+face
+finger
+foot
+forehead
+hair
+hand
+head
+heel
+hips
+index finger
+knee
+leg
+lip
+little finger
+lower body
+middle finger
+mouth
+neck
+nose
+ring finger
+shin
+shoulder
+stomach
+thigh
+thumb
+toe
+tongue
+tooth
+upper body
+waist
+wrist

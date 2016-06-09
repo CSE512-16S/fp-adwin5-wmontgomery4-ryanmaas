@@ -1,0 +1,30 @@
+
+{"name": "body",
+"children": [
+{"name": "ankle"}
+,
+{"name": "calf"}
+,
+{"name": "hips"}
+,
+{"name": "lower body",
+"children": [
+{"name": "leg"}
+]
+}
+,
+{"name": "shin"}
+,
+{"name": "upper body",
+"children": [
+{"name": "arm"}
+,
+{"name": "head",
+"children": [
+{"name": "face"}
+]
+}
+]
+}
+]
+}

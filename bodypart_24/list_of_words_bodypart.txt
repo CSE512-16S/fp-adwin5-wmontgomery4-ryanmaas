@@ -1,0 +1,24 @@
+arm
+cheek
+chest
+chin
+collar bone
+ear
+elbow
+eye
+eyebrow
+face
+finger
+forehead
+hair
+hand
+head
+mouth
+middle finger
+neck
+nose
+ring finger
+shoulder
+tongue
+tooth
+upper body
