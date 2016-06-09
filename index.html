@@ -1,94 +1,84 @@
-<!DOCTYPE html>
-<html lang="en-us">
-  <head>
-    <meta charset="UTF-8">
-    <title>CSE512 -Interactive Learning for Hierarchy of Concepts by CSE512-16S</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
-  </head>
-  <body>
-    <section class="page-header">
-      <h1 class="project-name">CSE512 -Interactive Learning for Hierarchy of Concepts</h1>
-      <h2 class="project-tagline">Improve the Crowdsourcing</h2>
-      <a href="https://github.com/CSE512-16S/fp-adwin5-wmontgomery4-ryanmaas" class="btn">View on GitHub</a>
-      <a href="https://github.com/CSE512-16S/fp-adwin5-wmontgomery4-ryanmaas/zipball/master" class="btn">Download .zip</a>
-      <a href="https://github.com/CSE512-16S/fp-adwin5-wmontgomery4-ryanmaas/tarball/master" class="btn">Download .tar.gz</a>
-    </section>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
-    <section class="main-content">
-      <h1>
-<a id="interactive-learning-for-hierarchy-of-concepts" class="anchor" href="#interactive-learning-for-hierarchy-of-concepts" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Interactive Learning for Hierarchy of Concepts</h1>
+<head>
+  <title>CSE512: Data Visualization</title>
+  <meta name="robots" content="index,follow" />
+  <link rel="stylesheet" type="text/css" href="http://courses.cs.washington.edu/courses/cse512/16sp/style.css"/>
+  <link rel="stylesheet" href="style.css">
 
-<h2>
-<a id="goal" class="anchor" href="#goal" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Goal</h2>
+</head>
 
-<p>We aim to buid a visualization system for a crowdsourcing algorithm which learns hierarchies of concepts. Our focus are:</p>
+<body>
+  <div class='content wider'>
 
-<ol>
-<li>Besides MAP tree, find the best way to visualize the hidden edge and possible parent for each node. </li>
-<li>Animate the transition before and after the user select the answer. Good animzation helps the user to track the change.</li>
-<li>Observe if the visualization tool will improve accuracy rate and speed up the process on crowdsourcing.</li>
-</ol>
+    <div class='title'>
+      <a href="http://courses.cs.washington.edu/courses/cse512/15sp/"><strong>CSE512</strong></a>
+         Interactive Learning for Hierarchy of Concepts
+         <small></small>
+    </div>
+    <br/>
 
-<h2>
-<a id="abstract" class="anchor" href="#abstract" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Abstract</h2>
+    <div class='pub' data-spy="scroll" data-target=".navbar">
 
-<p>This is brief introduction of our visualization system.</p>
+      <h1 class="title">Improve the Crowdsourcing</h1>
+      <div class="authors">
+        <a href="https://github.com/adwin5">Adwin Jahn</a>,
+        <a href="https://github.com/ryanmaas">Ryan Mass</a>,
+        <a href="https://github.com/wmontgomery4">Harley Montgomery</a>
+      </div>
+      <p>
+        Acknowledgement: Our work focus on the visualization system. The part of dataset and machine learning algorithm is provided by PHD student Yuyin Sun and Dr. Dieter Fox in the Department of Computer Science &amp; Engineering at the University of Washington.
+      </p>
 
-<ol type="A">
-  <li>Color encoding for the strength of edge between parent and their children.</li>
-  <li>Visualize the hidden edges and possible parent when cursor hovers over the node.</li>
-  <li>Interactive Interface to ask, collect and render the tree based on the user's answer. Then throws out the most informative question for next iteration.</li>
-</ol>
+      <h2>Goal</h2>
+      <p>We aim to buid a visualization system for a crowdsourcing algorithm which learns hierarchies of concepts. Our focus are:</p>
+      <ol>
+      <li><span class="label">Besides MAP tree, find the best way to visualize the hidden edge and possible parent for each node.</span></li>
+      <li><span class="label">Animate the transition before and after the user select the answer. Good animzation helps the user to track the change.</span></li>
+      <li><span class="label">Observe if the visualization tool will improve accuracy rate and speed up the process on crowdsourcing.</span></li>
+      </ol>
 
-<p><img src="https://github.com/CSE512-16S/fp-adwin5-wmontgomery4-ryanmaas/blob/gh-pages/summary.png" alt="abstract picture"></p>
 
-<h2>
-<a id="team-members" class="anchor" href="#team-members" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Team Members</h2>
+      <h2>Abstract</h2>
+      <p>We present a visualization system for an algorithm which learns hierarchies of concepts by crowdsourcing answers to binary questions about the relationships between objects. A hierarchy is represented as a tree, where a node is considered a subtype of its ancestors. The algorithm learns a distribution over all possible hierarchies, but only returns the (MAP) hierarchy, which may not be representative of the entire distribution. Previous visualizations also do a poor job of showing how relationships change in response to crowdsourced answers. Our tool tackles the first issue by prominently encoding the uncertainty of the edges in the tree and by allowing to user to hover over a node to see other possible parent nodes, a process we call ``edge highlighting''. The second issue is address with an interactive session which walks the user through the process of the algorithm, highlighting the changes between relationships that occur after a question has been answered.</p>
+      <p>We focus on three improvement.</p>
+      <ol type="A" >
+        <li><span class="label">Color encoding for the strength of edge between parent and their children.</span></li>
+        <li><span class="label">Visualize the hidden edges and possible parent when cursor hovers over the node.</span></li>
+        <li><span class="label">Interactive Interface to ask, collect and render the tree based on the user's answer. Then throws out the most informative question for next iteration.</span></li>
+      </ol>
 
-<ol>
-<li>Adwin Jahn (adwin5)</li>
-<li>Ryan Mass (ryanmaas)</li>
-<li>Harley Montgomery (wmontgomery4)</li>
-</ol>
+      <div class="figure">
+        <img src="summary.png" width="100%"/>
+        <div class="caption">A) MAP hierarchy of conecept with edge strength encoding B) Visualize the hidden edge and possible parents C) Interactive Interface</div>
+      </div>
 
-<h2>
-<a id="running-instructions" class="anchor" href="#running-instructions" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Running Instructions</h2>
+      <h2>Software</h2>
+      <p>
+        Try Interactive Learning for Hierarchy of Concepts online <a href="http://idl.cs.washington.edu/projects/lyra/app/">here</a>.
+      </p>
 
-<p>Run 
-<code>python -m SimpleHTTPServer 8000</code></p>
+      <h2>Materials</h2>
+      <div class="links">
+        <a href="final/poster-adwin555-wmonty-massr.pdf" >PDF</a>
+        |
+        <a href="final/poster-adwin555-wmonty-massr.pdf" >Poster</a>
+        |
+        <a href="https://github.com/CSE512-16S/fp-adwin5-wmontgomery4-ryanmaas">Code</a>
+      </div>
 
-<p>Go to <code>http://localhost:8000</code> on your machine</p>
+      
+      <div class='footer'>
+        <a href='http://cs.washington.edu'>Computer Science &amp; Engineering</a> -
+        <a href='http://www.washington.edu'>University of Washington</a>
+      </div>
+    </div>
+    <br/>
+    <br/>
 
-<h2>
-<a id="project-link" class="anchor" href="#project-link" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Project Link</h2>
 
-<p><a href="https://github.com/CSE512-16S/fp-adwin5-wmontgomery4-ryanmaas/blob/master/resource/proposal-adwin555-wmonty-massr.pdf">Proposal</a>, 
-<a href="https://github.com/CSE512-16S/fp-adwin5-wmontgomery4-ryanmaas/raw/master/final/poster-adwin555-wmonty-massr.pdf">Poster</a>,
-<a href="https://github.com/CSE512-16S/fp-adwin5-wmontgomery4-ryanmaas/raw/master/final/paper-adwin555-wmonty-massr.pdf">Final Paper</a></p>
+  </div>
+</body>
 
-<h2>
-<a id="breakdown" class="anchor" href="#breakdown" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>breakdown</h2>
-
-<ul>
-<li>All : overall architecture design, project goal setup, searching well-suited visualization method</li>
-<li>Adwin : nodeJS Backend setup, socketIO setup, frontend initial bootstrap setup </li>
-<li>Ryan : Related Paper Research, debugging, layout design<br>
-</li>
-<li>Harley : Frontend design, hidden edge visualization, node animation transition, color encoding</li>
-</ul>
-
-      <footer class="site-footer">
-        <span class="site-footer-owner"><a href="https://github.com/CSE512-16S/fp-adwin5-wmontgomery4-ryanmaas">CSE512 -Interactive Learning for Hierarchy of Concepts</a> is maintained by <a href="https://github.com/CSE512-16S">CSE512-16S</a>.</span>
-
-        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
-      </footer>
-
-    </section>
-
-  
-  </body>
 </html>
